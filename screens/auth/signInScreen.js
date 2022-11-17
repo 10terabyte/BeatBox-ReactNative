@@ -34,8 +34,11 @@ const SignInScreen = (props) => {
     setVisible(true);
     setTimeout(() => {
       setVisible(false);
-      props.navigation.navigate("signUpScreen");
+      // props.navigation.navigate("signUpScreen");
     }, 1500);
+  };
+  const handleSignup = () => {
+    props.navigation.navigate("signUpScreen");
   };
 
   const [textNo, onChangeTextNo] = useState();
@@ -203,35 +206,43 @@ const SignInScreen = (props) => {
               </TouchableOpacity>
             <Loader visible={visible} />
 
-            <View>
-            <TouchableOpacity
-              onPress={handleLogin}
+            <View
               style={{
-                ...Default.shadow,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: Colors.primary,
-                marginVertical: Default.fixPadding * 3,
-                paddingVertical: Default.fixPadding * 1.5,
-                borderRadius: 25,
-              }}
-            >
-              <Text style={{ ...Fonts.ExtraBold20White }}>{tr("login")}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleLogin}
-              style={{
-                ...Default.shadow,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: Colors.primary,
-                marginVertical: Default.fixPadding * 3,
-                paddingVertical: Default.fixPadding * 1.5,
-                borderRadius: 25,
-              }}
-            >
-              <Text style={{ ...Fonts.ExtraBold20White }}>{tr("login")}</Text>
-            </TouchableOpacity>
+                flexDirection: isRtl ? "row-reverse" : "row",
+                justifyContent: "space-between",
+                marginTop: Default.fixPadding * 1.5,
+              }}>
+                <TouchableOpacity
+                onPress={handleLogin}
+                style={{
+                  ...Default.shadow,
+                  backgroundColor: Colors.primary,
+                  width: width / 2.5,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingVertical: Default.fixPadding * 1.5,
+                  borderRadius: 10,
+                  
+                }}
+              >
+                <Text style={{ ...Fonts.ExtraBold20White }}>{tr("login")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+
+                onPress={handleSignup}
+                style={{
+                  ...Default.shadow,
+                  width: width / 2.5,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: Colors.lightRed,
+                  paddingVertical: Default.fixPadding * 1.5,
+                  borderRadius: 10,
+                }}
+              >
+                <Text style={{ ...Fonts.ExtraBold20White }}>{tr("singup")}</Text>
+              </TouchableOpacity>
+            
             </View>
             
           </View>

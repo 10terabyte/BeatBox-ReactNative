@@ -11,14 +11,17 @@
         "verification":"*we sent OTP for verification",
         "or":"Or",
         "enterEmail" : "Enter your email address",
-        "enterPassword" : "Enter your password"
+        "enterPassword" : "Enter your password",
+        "singup" : "Signup"
     },
     "signUpScreen":{
         "register":"Register",
         "hello":"Hello, please create your account",
         "name":"Enter your name",
         "number":"Enter your mobile number",
-        "email":"Enter your email address"
+        "email":"Enter your email address",
+        "enterPassword" : "Enter your password",
+        "confirmPassword" : "Confirm your password"
     },
     "verificationScreen":{
         "otp":"OTP verification",

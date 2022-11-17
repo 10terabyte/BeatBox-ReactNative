@@ -34,6 +34,8 @@ const SignUpScreen = (props) => {
     }, 1500);
   };
 
+  const[textPassword, onChangeTextPassword] = useState(false);
+
   const [textNo, onChangeTextNo] = useState();
   const [textName, onChangeTextNAme] = useState();
   const [textEmail, onChangeTextEmail] = useState();
@@ -115,7 +117,7 @@ const SignUpScreen = (props) => {
                 }}
               />
             </View>
-
+             
             <View
               style={{
                 ...Default.shadow,
@@ -179,6 +181,73 @@ const SignUpScreen = (props) => {
                   marginHorizontal: Default.fixPadding * 0.5,
                 }}
                 keyboardType="email-address"
+              />
+            </View>
+            
+            <View
+              style={{
+                ...Default.shadow,
+                borderRadius: 10,
+                backgroundColor: Colors.lightBlack,
+                padding: Default.fixPadding * 1.5,
+                marginTop: Default.fixPadding * 1.5,
+                flexDirection: isRtl ? "row-reverse" : "row",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name="ios-key-outline"
+                color={Colors.white}
+                size={20}
+                style={{ flex: 0.7 }}
+              />
+              <TextInput
+                placeholder={tr("enterPassword")}
+                placeholderTextColor={Colors.white}
+                onChangeText={onChangeTextPassword}
+                selectionColor={Colors.primary}
+                value={textPassword}
+                secureTextEntry = {true}
+                keyboardType={"number-pad"}
+                style={{
+                  ...Fonts.Medium15White,
+                  flex: 9.3,
+                  textAlign: isRtl ? "right" : "left",
+                  marginHorizontal: Default.fixPadding * 0.5,
+                }}
+              />
+            </View>
+            <View
+              style={{
+                ...Default.shadow,
+                borderRadius: 10,
+                backgroundColor: Colors.lightBlack,
+                padding: Default.fixPadding * 1.5,
+                marginTop: Default.fixPadding * 1.5,
+                flexDirection: isRtl ? "row-reverse" : "row",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name="ios-key-outline"
+                color={Colors.white}
+                size={20}
+                style={{ flex: 0.7 }}
+              />
+              <TextInput
+                placeholder={tr("confirmPassword")}
+                placeholderTextColor={Colors.white}
+                onChangeText={onChangeTextPassword}
+                selectionColor={Colors.primary}
+                value={textPassword}
+                secureTextEntry = {true}
+                keyboardType={"number-pad"}
+                style={{
+                  ...Fonts.Medium15White,
+                  flex: 9.3,
+                  textAlign: isRtl ? "right" : "left",
+                  marginHorizontal: Default.fixPadding * 0.5,
+                }}
               />
             </View>
             <Loader visible={visible} />
