@@ -16,6 +16,8 @@ import Feather from "react-native-vector-icons/Feather";
 import BottomMusic from "../components/bottomMusic";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BottomSheet } from "react-native-btr";
+import { getAuth, signOut } from "firebase/auth";
+const auth = getAuth();
 
 const ProfileScreen = (props) => {
   const { t, i18n } = useTranslation();
@@ -369,8 +371,9 @@ const ProfileScreen = (props) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  setVisible(false);
-                  props.navigation.navigate("signInScreen");
+                  // setVisible(false);
+                  // props.navigation.navigate("signInScreen");
+                  signOut(auth);
                 }}
                 style={{
                   backgroundColor: Colors.primary,

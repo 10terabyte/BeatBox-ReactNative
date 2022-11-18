@@ -1,0 +1,5 @@
+{
+    "resolver": {
+      "assetExts": ["ttf", "png", "css", "html", "mp3", "cjs"]
+    }
+  }

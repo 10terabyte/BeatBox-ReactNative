@@ -9,6 +9,7 @@ import {
   TextInput,
   Dimensions,
   Platform,
+  ToastAndroid
 } from "react-native";
 import React, { useState } from "react";
 import { Colors, Fonts, Default } from "../../constants/style";
@@ -16,7 +17,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/loader";
-
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 const { width } = Dimensions.get("window");
 
 const SignInScreen = (props) => {
@@ -27,15 +28,30 @@ const SignInScreen = (props) => {
   function tr(key) {
     return t(`signInScreen:${key}`);
   }
-
   const [visible, setVisible] = useState(false);
-
   const handleLogin = () => {
+    if(textEmail == null || textEmail == ''){
+      ToastAndroid.show('Enter your email address.', ToastAndroid.SHORT);
+      return;
+    }
+    if(textPassword == null || textPassword == ''){
+      ToastAndroid.show('Enter your password.', ToastAndroid.SHORT);
+      return;
+    }
+    const auth = getAuth();
     setVisible(true);
-    setTimeout(() => {
+    try {
+        signInWithEmailAndPassword(auth, textEmail, textPassword).then((userCredential) => {
+          setVisible(false);
+          ToastAndroid.show('Enter your password.', ToastAndroid.SHORT);
+       }).catch((error) => {
+          ToastAndroid.show('Invalid email or password.', ToastAndroid.SHORT);
+          setVisible(false);
+       });
+    } catch (error) {
       setVisible(false);
-      // props.navigation.navigate("signUpScreen");
-    }, 1500);
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
+    }
   };
   const handleSignup = () => {
     props.navigation.navigate("signUpScreen");

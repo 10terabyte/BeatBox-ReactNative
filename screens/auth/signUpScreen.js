@@ -8,13 +8,15 @@ import {
   ImageBackground,
   TextInput,
   Platform,
+  ToastAndroid
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Colors, Fonts, Default } from "../../constants/style";
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import Loader from "../../components/loader";
-
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+ 
 const SignUpScreen = (props) => {
   const { t, i18n } = useTranslation();
 
@@ -26,19 +28,42 @@ const SignUpScreen = (props) => {
 
   const [visible, setVisible] = useState(false);
 
-  const handleRegister = () => {
-    setVisible(true);
-    setTimeout(() => {
-      setVisible(false);
-      props.navigation.navigate("verificationScreen");
-    }, 1500);
-  };
+
 
   const[textPassword, onChangeTextPassword] = useState(false);
-
+  const [textConfirmPassword, onChangeConfirmTextPassword] = useState(false);
   const [textNo, onChangeTextNo] = useState();
   const [textName, onChangeTextNAme] = useState();
   const [textEmail, onChangeTextEmail] = useState();
+  const handleRegister = () => {
+    if(textEmail == null || textEmail == ''){
+      ToastAndroid.show('Enter your email address.', ToastAndroid.SHORT);
+      return;
+    }
+    if(textPassword == textConfirmPassword){
+      setVisible(true);
+
+    
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, textEmail, textPassword)
+        .then((userCredential) => {
+          // Signed in 
+          //userCredential.user;
+          setVisible(false);
+          ToastAndroid.show('Thank you!', ToastAndroid.SHORT);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setVisible(false);
+          // ..
+        });
+    }
+    else{
+      ToastAndroid.show('Password does not match!', ToastAndroid.SHORT);
+    }
+    
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
@@ -84,74 +109,7 @@ const SignUpScreen = (props) => {
             >
               {tr("hello")}
             </Text>
-            <View
-              style={{
-                ...Default.shadow,
-                borderRadius: 10,
-                backgroundColor: Colors.lightBlack,
-                padding: Default.fixPadding * 1.5,
-                marginBottom: Default.fixPadding * 1.5,
-                flexDirection: isRtl ? "row-reverse" : "row",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons
-                name="person-outline"
-                color={Colors.white}
-                size={20}
-                style={{
-                  flex: 0.7,
-                }}
-              />
-              <TextInput
-                placeholder={tr("name")}
-                placeholderTextColor={Colors.white}
-                onChangeText={onChangeTextNAme}
-                selectionColor={Colors.primary}
-                value={textName}
-                style={{
-                  ...Fonts.Medium15White,
-                  flex: 9.3,
-                  textAlign: isRtl ? "right" : "left",
-                  marginHorizontal: Default.fixPadding * 0.5,
-                }}
-              />
-            </View>
              
-            <View
-              style={{
-                ...Default.shadow,
-                borderRadius: 10,
-                backgroundColor: Colors.lightBlack,
-                padding: Default.fixPadding * 1.5,
-                marginBottom: Default.fixPadding * 1.5,
-                flexDirection: isRtl ? "row-reverse" : "row",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons
-                name="phone-portrait-outline"
-                color={Colors.white}
-                size={20}
-                style={{ flex: 0.7 }}
-              />
-              <TextInput
-                placeholder={tr("number")}
-                placeholderTextColor={Colors.white}
-                onChangeText={onChangeTextNo}
-                selectionColor={Colors.primary}
-                value={textNo}
-                maxLength={10}
-                keyboardType={"number-pad"}
-                style={{
-                  ...Fonts.Medium15White,
-                  flex: 9.3,
-                  textAlign: isRtl ? "right" : "left",
-                  marginHorizontal: Default.fixPadding * 0.5,
-                }}
-              />
-            </View>
-
             <View
               style={{
                 ...Default.shadow,
@@ -208,7 +166,7 @@ const SignUpScreen = (props) => {
                 selectionColor={Colors.primary}
                 value={textPassword}
                 secureTextEntry = {true}
-                keyboardType={"number-pad"}
+                // keyboardType={"number-pad"}
                 style={{
                   ...Fonts.Medium15White,
                   flex: 9.3,
@@ -237,11 +195,12 @@ const SignUpScreen = (props) => {
               <TextInput
                 placeholder={tr("confirmPassword")}
                 placeholderTextColor={Colors.white}
-                onChangeText={onChangeTextPassword}
+
+                onChangeText={onChangeConfirmTextPassword}
                 selectionColor={Colors.primary}
-                value={textPassword}
+                value={textConfirmPassword}
                 secureTextEntry = {true}
-                keyboardType={"number-pad"}
+                // keyboardType={"number-pad"}
                 style={{
                   ...Fonts.Medium15White,
                   flex: 9.3,

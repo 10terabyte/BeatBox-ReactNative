@@ -23,6 +23,7 @@
         "enterPassword" : "Enter your password",
         "confirmPassword" : "Confirm your password"
     },
+
     "verificationScreen":{
         "otp":"OTP verification",
         "pleaseEnter":"Otp has been sent to you on your mobile number please enter it below",
@@ -30,6 +31,9 @@
     },
     "loader":{
         "pleaseWait":"Please wait"
+    },
+    "mainScreen":{
+
     },
     "bottomTab":{
         "home":"Home",
