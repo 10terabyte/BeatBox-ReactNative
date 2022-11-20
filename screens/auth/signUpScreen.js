@@ -15,7 +15,7 @@ import { Colors, Fonts, Default } from "../../constants/style";
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import Loader from "../../components/loader";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
  
 const SignUpScreen = (props) => {
   const { t, i18n } = useTranslation();
@@ -40,6 +40,10 @@ const SignUpScreen = (props) => {
       ToastAndroid.show('Enter your email address.', ToastAndroid.SHORT);
       return;
     }
+    if(textName == null || textName == ''){
+      ToastAndroid.show('Enter your name.', ToastAndroid.SHORT);
+      return;
+    }
     if(textPassword == textConfirmPassword){
       setVisible(true);
 
@@ -48,13 +52,28 @@ const SignUpScreen = (props) => {
       createUserWithEmailAndPassword(auth, textEmail, textPassword)
         .then((userCredential) => {
           // Signed in 
+          const auth1 = getAuth();
+          updateProfile(auth1.currentUser, {
+            displayName: textName
+          }).then(() => {
+            // Profile updated!
+            setVisible(false);
+            ToastAndroid.show('Thank you!', ToastAndroid.SHORT);
+            // ...
+          }).catch((error) => {
+
+            // An error occurred
+            // ...
+            setVisible(false);
+            ToastAndroid.show('Error in update profile!', ToastAndroid.SHORT);
+          });
           //userCredential.user;
-          setVisible(false);
-          ToastAndroid.show('Thank you!', ToastAndroid.SHORT);
+          
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
+          ToastAndroid.show(error.message, ToastAndroid.SHORT);
           setVisible(false);
           // ..
         });
@@ -109,13 +128,44 @@ const SignUpScreen = (props) => {
             >
               {tr("hello")}
             </Text>
-             
             <View
               style={{
                 ...Default.shadow,
                 borderRadius: 10,
                 backgroundColor: Colors.lightBlack,
                 padding: Default.fixPadding * 1.5,
+                flexDirection: isRtl ? "row-reverse" : "row",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name="md-person-outline"
+                color={Colors.white}
+                size={20}
+                style={{ flex: 0.7 }}
+              />
+              <TextInput
+                placeholder={tr("name")}
+                placeholderTextColor={Colors.white}
+                onChangeText={onChangeTextNAme}
+                selectionColor={Colors.primary}
+                value={textName}
+                style={{
+                  ...Fonts.Medium15White,
+                  flex: 9.3,
+                  textAlign: isRtl ? "right" : "left",
+                  marginHorizontal: Default.fixPadding * 0.5,
+                }}
+                keyboardType="email-address"
+              />
+            </View>
+            <View
+              style={{
+                ...Default.shadow,
+                borderRadius: 10,
+                backgroundColor: Colors.lightBlack,
+                padding: Default.fixPadding * 1.5,
+                marginTop: Default.fixPadding * 1.5,
                 flexDirection: isRtl ? "row-reverse" : "row",
                 alignItems: "center",
               }}

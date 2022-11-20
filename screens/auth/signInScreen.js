@@ -17,8 +17,18 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/loader";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, OAuthProvider, signInWithPopup, GoogleAuthProvider, signInWithCredential  } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
+import * as WebBrowser from 'expo-web-browser';
+import { ResponseType } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
+import {IOS_STANDALONE_APP_CLIENT_ID, ANDROID_STANDALONE_APP_CLIENT_ID} from "@env";
+
+WebBrowser.maybeCompleteAuthSession();
 const { width } = Dimensions.get("window");
+
+
+
 
 const SignInScreen = (props) => {
   const { t, i18n } = useTranslation();
@@ -29,6 +39,38 @@ const SignInScreen = (props) => {
     return t(`signInScreen:${key}`);
   }
   const [visible, setVisible] = useState(false);
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
+    {
+      clientId: '484962252809-ngg4cdug2r66976bono7qbg5kee9gril.apps.googleusercontent.com',
+      // expoClientId: '484962252809-ngg4cdug2r66976bono7qbg5kee9gril.apps.googleusercontent.com',
+      // iosClientId: '484962252809-9c778gm74lsg60trfkiv65jdie1bqdvl.apps.googleusercontent.com',
+      // androidClientId: '484962252809-ljkroeh9vcl7gg4l1ec61lbsvhmct26t.apps.googleusercontent.com',
+      // webClientId: '484962252809-ngg4cdug2r66976bono7qbg5kee9gril.apps.googleusercontent.com',
+    },
+  );
+  const [googleMesage, setGoogleMessage] = useState(false);
+
+  React.useEffect(() => {
+    // setGoogleMessage(JSON.stringify(response))
+    
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      const auth = getAuth();
+      const credential = GoogleAuthProvider.credential(id_token);
+      console.log(credential, "CREDENTIAL");
+      signInWithCredential(auth, credential).then(()=>{
+        setVisible(false);
+      }).catch((error) => {
+        ToastAndroid.show('Error.', ToastAndroid.SHORT);
+        setVisible(false);
+     });
+    }
+    else{
+      setVisible(false);
+    }
+    console.log(response);
+    
+  }, [response]);
   const handleLogin = () => {
     if(textEmail == null || textEmail == ''){
       ToastAndroid.show('Enter your email address.', ToastAndroid.SHORT);
@@ -56,11 +98,16 @@ const SignInScreen = (props) => {
   const handleSignup = () => {
     props.navigation.navigate("signUpScreen");
   };
-
+  const googleLogin = () =>{
+    setVisible(true);
+    promptAsync({useProxy: true ,projectNameForProxy: '@yaroslavd/rnmusic' })
+    console.log("Hello world")
+  }
   const [textNo, onChangeTextNo] = useState();
   const [textEmail, onChangeTextEmail] = useState();
   const [textPassword, onChangeTextPassword] = useState();
   return (
+    
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
         backgroundColor={Colors.black}
@@ -182,7 +229,9 @@ const SignInScreen = (props) => {
                   size={20}
                   color={Colors.white}
                   style={{ marginHorizontal: Default.fixPadding }}
-                />
+                >
+                
+                </FontAwesome>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
@@ -194,6 +243,7 @@ const SignInScreen = (props) => {
                   marginTop: Default.fixPadding * 1.5,
                   borderRadius: 10,
                 }}
+                onPress = {googleLogin}
               >
                 <Ionicons
                   name="logo-google"

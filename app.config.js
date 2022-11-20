@@ -1,11 +1,14 @@
-{
+ 
+export default{
   "expo": {
     "name": "RN-Music",
-    "slug": "music",
+    "slug": "rnmusic",
+    "owner": "yaroslavd",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "rnMusic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
@@ -18,14 +21,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier" : "com.yaroslavd.rnMusic",
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.camelcase.rnMusic"
+      "package": "com.yaroslavd.rnMusic",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

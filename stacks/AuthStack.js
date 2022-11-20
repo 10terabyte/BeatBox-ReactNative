@@ -13,11 +13,7 @@ export default function AuthStack() {
         screenOptions={{
         ...TransitionPresets.SlideFromRightIOS,
       }}>
-         <Stack.Screen
-          name="splashScreen"
-          component={SplashScreen}
-          options={{ headerShown: false }}
-        />
+       
         
         <Stack.Screen
           name="onboardingScreen"

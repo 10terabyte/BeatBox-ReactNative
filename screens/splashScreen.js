@@ -10,12 +10,14 @@ import {
 import React from "react";
 import { Colors, Fonts } from "../constants/style";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { useAuthentication } from '../utils/hooks/useAuthentication';
 const { width, height } = Dimensions.get("window");
 
 const SplashScreen = (props) => {
+  const { user } = useAuthentication();
   setTimeout(() => {
-    props.navigation.push("onboardingScreen");
+    
+    props.navigation.push(user ? "bottomTab" : "onboardingScreen");
   }, 2000);
 
   return (
