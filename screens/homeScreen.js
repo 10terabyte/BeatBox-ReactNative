@@ -16,12 +16,12 @@ import { useTranslation } from "react-i18next";
 import { Colors, Fonts, Default } from "../constants/style";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomMusic from "../components/bottomMusic";
-
+import { useAuthentication } from '../utils/hooks/useAuthentication';
 const { width } = Dimensions.get("window");
 
 const HomeScreen = (props) => {
   const { t, i18n } = useTranslation();
-
+  const { user } = useAuthentication();
   const isRtl = i18n.dir() === "rtl";
 
   function tr(key) {
@@ -384,7 +384,7 @@ const HomeScreen = (props) => {
         }}
       >
         <View style={{ flex: 9 }}>
-          <Text style={{ ...Fonts.Bold18White }}>{tr("hello")} Jenny,</Text>
+          <Text style={{ ...Fonts.Bold18White }}>{tr("hello")} {user.displayName},</Text>
           <Text style={{ ...Fonts.SemiBold14Grey }}>{tr("hearToday")}</Text>
         </View>
         <TouchableOpacity

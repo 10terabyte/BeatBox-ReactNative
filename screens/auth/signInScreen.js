@@ -17,7 +17,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/loader";
-import { getAuth, signInWithEmailAndPassword, OAuthProvider, signInWithPopup, GoogleAuthProvider, signInWithCredential  } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, OAuthProvider, signInWithPopup, GoogleAuthProvider, signInWithCredential, updateProfile  } from "firebase/auth";
 import { initializeApp } from 'firebase/app';
 import * as WebBrowser from 'expo-web-browser';
 import { ResponseType } from 'expo-auth-session';
@@ -49,7 +49,7 @@ const SignInScreen = (props) => {
     },
   );
   const [googleMesage, setGoogleMessage] = useState(false);
-
+  const [googleAccessToken, setGoogleAccessToken] = React.useState();
   React.useEffect(() => {
     // setGoogleMessage(JSON.stringify(response))
     
@@ -58,8 +58,26 @@ const SignInScreen = (props) => {
       const auth = getAuth();
       const credential = GoogleAuthProvider.credential(id_token);
       console.log(credential, "CREDENTIAL");
-      signInWithCredential(auth, credential).then(()=>{
-        setVisible(false);
+      signInWithCredential(auth, credential).then(async()=>{
+          let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+            headers: { Authorization: `Bearer ${accessToken}`}
+          });
+
+          userInfoResponse.json().then(data => {
+            const auth1 = getAuth();
+            updateProfile(auth1.currentUser, {
+              displayName: data.name, photoURL: data.picture
+            }).then(() => {
+              // Profile updated!
+              setVisible(false);
+              ToastAndroid.show('Thank you!', ToastAndroid.SHORT);
+              // ...
+            }).catch((error) => {
+
+              setVisible(false);
+              ToastAndroid.show('Error in update profile!', ToastAndroid.SHORT);
+            });
+          });
       }).catch((error) => {
         ToastAndroid.show('Error.', ToastAndroid.SHORT);
         setVisible(false);

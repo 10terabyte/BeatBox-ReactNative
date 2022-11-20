@@ -25,7 +25,7 @@ const SignUpScreen = (props) => {
   function tr(key) {
     return t(`signUpScreen:${key}`);
   }
-
+  
   const [visible, setVisible] = useState(false);
 
 
