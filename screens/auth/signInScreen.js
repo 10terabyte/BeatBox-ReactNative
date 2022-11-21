@@ -62,8 +62,8 @@ const SignInScreen = (props) => {
           let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
             headers: { Authorization: `Bearer ${accessToken}`}
           });
-
           userInfoResponse.json().then(data => {
+            
             const auth1 = getAuth();
             updateProfile(auth1.currentUser, {
               displayName: data.name, photoURL: data.picture
@@ -86,7 +86,6 @@ const SignInScreen = (props) => {
     else{
       setVisible(false);
     }
-    console.log(response);
     
   }, [response]);
   const handleLogin = () => {

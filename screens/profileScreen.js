@@ -32,7 +32,7 @@ const ProfileScreen = (props) => {
   const toggleClose = () => {
     setVisible(!visible);
   };
-
+  let userAvatar = auth.currentUser.photoURL == null || auth.currentUser.photoURL == '' ? `https://ui-avatars.com/api/?name=${auth.currentUser.displayName}` : auth.currentUser.photoURL;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
       <StatusBar
@@ -57,17 +57,19 @@ const ProfileScreen = (props) => {
             marginVertical: Default.fixPadding * 2,
           }}
         >
-          <Image source={require("../assets/image/profile1.png")} />
+ 
+          <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={{
+            uri:userAvatar}} />
           <View style={{ marginHorizontal: Default.fixPadding * 1.5 }}>
-            <Text style={{ ...Fonts.Bold16White }}>Jenny Wilson</Text>
+            <Text style={{ ...Fonts.Bold16White }}>{auth.currentUser.displayName}</Text>
             <Text
               style={{
                 ...Fonts.Bold12ExtraWhite,
-                marginTop: Default.fixPadding * 0.5,
+                marginTop: auth.currentUser.phoneNumber ? Default.fixPadding * 0.5 : 0,
                 textAlign: isRtl ? "right" : "left",
               }}
             >
-              +91(1234567890)
+              {auth.currentUser.phoneNumber ?? ''}
             </Text>
           </View>
         </View>
