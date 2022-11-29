@@ -14,7 +14,8 @@ import { Colors, Fonts, Default } from "../constants/style";
 import { useTranslation } from "react-i18next";
 import DashedLine from "react-native-dashed-line";
 import Loader from "../components/loader";
-
+import { getDatabase, onValue, orderByChild, query, ref,limitToFirst } from "firebase/database";
+const DB = getDatabase();
 const PremiumScreen = (props) => {
   const { t, i18n } = useTranslation();
 
@@ -28,39 +29,41 @@ const PremiumScreen = (props) => {
     props.navigation.goBack();
     return true;
   };
+  const [optionsCategory, setOptionCategory] = useState([]);
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", backAction);
 
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", backAction);
   }, []);
+  useEffect(()=>{
+    const collection = ref(DB, "/subscriptions");
+    const orderCollection = query(collection, orderByChild("charge_amount"));
+    console.log(orderCollection,"orderCollection")
+    onValue(orderCollection, snapshot=>{
+      const data = snapshot.val();
+      let premiumData = [];
+      // console.log(data,"subscription")
+      if(data == null){
+        setOptionCategory([]);
+      }
+      Object.keys(data).map(key=>{
+        premiumData.push({
+          ...data[key],
+          key
+        })
+      });
+  
+      setOptionCategory(premiumData);
+    })
+  },[])
 
   const [visible, setVisible] = useState(false);
 
-  const optionsCategory = [
-    {
-      id: "1",
-      text: tr("specialOffer"),
-      premium: tr("1month"),
-      other: "$20",
-    },
-    {
-      id: "2",
-      text: tr("6month"),
-      premium: tr("premium"),
-      other: "$50",
-    },
-    {
-      id: "3",
-      text: tr("12month"),
-      premium: tr("premium"),
-      other: "$95",
-    },
-  ];
 
-  const [selectedCategory, setSelectedCategory] = useState(tr("specialOffer"));
-  const category = (text) => {
-    setSelectedCategory(text);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const category = (key) => {
+    setSelectedCategory(key);
   };
 
   return (
@@ -103,7 +106,7 @@ const PremiumScreen = (props) => {
           {optionsCategory.map((item, index) => {
             return (
               <TouchableOpacity
-                key={item.id}
+                key={item.key}
                 style={{
                   ...Default.shadow,
                   alignItems: "center",
@@ -111,14 +114,14 @@ const PremiumScreen = (props) => {
                   borderRadius: 10,
                   paddingVertical: Default.fixPadding * 1.5,
                   paddingHorizontal: Default.fixPadding * 1.5,
-                  backgroundColor: Colors.lightBlack,
+                  backgroundColor: item.color,
                   marginVertical: Default.fixPadding,
                   borderColor:
-                    selectedCategory === item.text ? Colors.yellow : null,
-                  borderWidth: selectedCategory === item.text ? 2 : 0,
+                    selectedCategory === item.key ? Colors.yellow : null,
+                  borderWidth: selectedCategory === item.key ? 2 : 0,
                 }}
                 onPress={() => {
-                  category(item.text);
+                  category(item.key);
                 }}
               >
                 <View
@@ -135,10 +138,10 @@ const PremiumScreen = (props) => {
                           : Fonts.Bold16White
                       }
                     >
-                      {item.text}
+                      {item.subscription_name}
                     </Text>
                     <Text style={{ ...Fonts.Bold14LightGrey }}>
-                      {item.premium}
+                      Amount: {item.charge_amount}
                     </Text>
                   </View>
                   <View
@@ -148,7 +151,7 @@ const PremiumScreen = (props) => {
                       alignItems: "center",
                     }}
                   >
-                    <Text style={{ ...Fonts.Bold20White }}>{item.other}</Text>
+                    <Text style={{ ...Fonts.Bold20White }}>${item.price}</Text>
                   </View>
                 </View>
               </TouchableOpacity>

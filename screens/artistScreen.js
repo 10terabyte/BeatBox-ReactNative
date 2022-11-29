@@ -11,6 +11,7 @@ import {
   Share,
   Dimensions,
   Platform,
+  ToastAndroid
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -20,12 +21,19 @@ import BottomMusic from "../components/bottomMusic";
 import MainBottomSheet from "../components/mainBottomSheet";
 import AddToPlayList from "../components/addToPlayList";
 import NewPlayList from "../components/newPlayList";
+import { useAuthentication } from '../utils/hooks/useAuthentication';
+import { getDatabase, ref, onValue, query as d_query, get, child, equalTo, where as db_where } from "firebase/database";
+import { collection, doc, addDoc, getFirestore, setDoc, query, getDocs, where, getCountFromServer } from "firebase/firestore";
+import { floor } from "react-native-reanimated";
+const DB = getDatabase();
 
 const { width } = Dimensions.get("window");
 
 const ArtistScreen = (props) => {
+  const { user } = useAuthentication();
+  const [followers, setFollowers] = useState("");
   const { t, i18n } = useTranslation();
-
+  const [beatList, setBeatList] = useState([]);
   const isRtl = i18n.dir() === "rtl";
 
   function tr(key) {
@@ -42,6 +50,10 @@ const ArtistScreen = (props) => {
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", backAction);
   }, []);
+
+  useEffect(() => {
+    // const beatCollection = d_query(ref(DB, "beats"),equalTo(props.route.params.item.key,""))
+  },[])
 
   const [visible, setVisible] = useState(false);
 
@@ -67,39 +79,71 @@ const ArtistScreen = (props) => {
       message: toString(),
     });
   };
+  useEffect(() => {
+    const getFollowers = async () => {
 
-  const albumsData = [
-    {
-      key: "1",
-      name: "Loveyatri",
-      image: require("../assets/image/m1.png"),
-    },
-    {
-      key: "2",
-      name: "Teraa Surroor",
-      image: require("../assets/image/m2.png"),
-    },
-    {
-      key: "3",
-      name: "Made in china",
-      image: require("../assets/image/m3.png"),
-    },
-    {
-      key: "4",
-      name: "Pream ratn dhan..",
-      image: require("../assets/image/m4.png"),
-    },
-    {
-      key: "5",
-      name: "Odhani",
-      image: require("../assets/image/m5.png"),
-    },
-    {
-      key: "6",
-      name: "Tu Mileya",
-      image: require("../assets/image/m6.png"),
-    },
-  ];
+      const StoreDB = getFirestore();
+      const q = query(collection(StoreDB, "follows"), where("target", "==", props.route.params.item.key))
+      const followNum = await getCountFromServer(q);
+      console.log(followNum, "follownum")
+      setFollowers(followNum.data().count)
+    }
+    getFollowers();
+  }, [props.route.params.item.key])
+  // const albumsData = [
+  //   {
+  //     key: "1",
+  //     name: "Loveyatri",
+  //     image: require("../assets/image/m1.png"),
+  //   },
+  //   {
+  //     key: "2",
+  //     name: "Teraa Surroor",
+  //     image: require("../assets/image/m2.png"),
+  //   },
+  //   {
+  //     key: "3",
+  //     name: "Made in china",
+  //     image: require("../assets/image/m3.png"),
+  //   },
+  //   {
+  //     key: "4",
+  //     name: "Pream ratn dhan..",
+  //     image: require("../assets/image/m4.png"),
+  //   },
+  //   {
+  //     key: "5",
+  //     name: "Odhani",
+  //     image: require("../assets/image/m5.png"),
+  //   },
+  //   {
+  //     key: "6",
+  //     name: "Tu Mileya",
+  //     image: require("../assets/image/m6.png"),
+  //   },
+  // ];
+  const handleFollow = async () => {
+    const StoreDB = getFirestore();
+    const q = query(collection(StoreDB, "follows"), where("follower", "==", user.uid), where("target", "==", props.route.params.item.key), where("target_item", "==", "artist"))
+    const querySnapshot = await getDocs(q);
+    let data = [];
+    querySnapshot.forEach(doc => {
+      console.log(doc.id, "=>", doc.data())
+      data.push(doc);
+
+    })
+    if (data.length > 0) {
+      ToastAndroid.show("You are following now", ToastAndroid.SHORT)
+      return;
+    }
+    addDoc(collection(StoreDB, "follows"), {
+      target: props.route.params.item.key,
+      target_item: "artist",
+      follower: user.uid
+    });
+    console.log("add")
+    // const followCollection = query(ref(DB, "follows"), equalTo("artist", "target"), equalTo(props.route.params.item.key, "target_key"), equalTo(user.uid, "user"))
+  }
   const renderItemAlbums = ({ item, index }) => {
     const isFirst = index === 0;
 
@@ -238,7 +282,7 @@ const ArtistScreen = (props) => {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
       <StatusBar
         backgroundColor={Colors.boldBlack}
         barStyle={Platform.OS === "android" ? "light-content" : "default"}
@@ -246,7 +290,7 @@ const ArtistScreen = (props) => {
       <View
         style={{
           paddingVertical: Default.fixPadding,
-          backgroundColor: Colors.boldBlack,
+          backgroundColor: Colors.darkBlue,
         }}
       >
         <TouchableOpacity
@@ -271,7 +315,7 @@ const ArtistScreen = (props) => {
             alignItems: "center",
           }}
         >
-          <Image source={require("../assets/image/artists.png")} />
+          <Image source={{ uri: props.route.params.item.ImageURL }} style={{ width: "100%", height: 150 }} />
         </View>
         <View
           style={{
@@ -290,37 +334,46 @@ const ArtistScreen = (props) => {
               alignItems: isRtl ? "flex-end" : "flex-start",
             }}
           >
-            <Text style={{ ...Fonts.Bold18White }}>Darshan raval</Text>
+            <Text style={{ ...Fonts.Bold18White }}>{props.route.params.item.name}</Text>
             <Text
               style={{
                 ...Fonts.Medium14White,
                 marginVertical: Default.fixPadding * 0.5,
               }}
             >
+              {followers ?? 0}  &nbsp;
               {tr("followers")}
             </Text>
-            <View
-              style={{
-                ...Default.shadow,
-                backgroundColor: Colors.extraBlack,
-                borderRadius: 5,
-                borderWidth: 1.5,
-                borderColor: Colors.white,
-                justifyContent: "center",
-                alignItems: "center",
-                width: width / 4.5,
-                marginVertical: Default.fixPadding * 0.5,
-              }}
-            >
-              <Text
+            <TouchableOpacity
+              onPress={() => {
+                handleFollow();
+              }}>
+
+
+              <View
                 style={{
-                  ...Fonts.Bold14White,
-                  padding: Default.fixPadding * 0.5,
+                  ...Default.shadow,
+                  backgroundColor: Colors.extraBlack,
+                  borderRadius: 5,
+                  borderWidth: 1.5,
+                  borderColor: Colors.white,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: width / 4.5,
+                  marginVertical: Default.fixPadding * 0.5,
                 }}
+
               >
-                {tr("follow")}
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    ...Fonts.Bold14White,
+                    padding: Default.fixPadding * 0.5,
+                  }}
+                >
+                  {tr("follow")}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <View
             style={{
@@ -361,8 +414,8 @@ const ArtistScreen = (props) => {
             marginBottom: Default.fixPadding * 1.5,
           }}
         >
-          <Text style={{ ...Fonts.Bold18White }}>{tr("playList")}</Text>
-          <TouchableOpacity
+          <Text style={{ ...Fonts.Bold18White }}>{"Beat list"}</Text>
+          {/* <TouchableOpacity
             onPress={() => props.navigation.navigate("playListSeeAllScreen")}
           >
             <Text
@@ -373,7 +426,7 @@ const ArtistScreen = (props) => {
             >
               {tr("seeAll")}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {playListData.map((item, index) => {
           const isFirst = index === 0;
@@ -483,7 +536,7 @@ const ArtistScreen = (props) => {
           cancel={toggleCloseNewPlayList}
         />
 
-        <Text
+        {/* <Text
           style={{
             ...Fonts.Bold18White,
             marginBottom: Default.fixPadding * 1.5,
@@ -499,9 +552,9 @@ const ArtistScreen = (props) => {
           renderItem={renderItemAlbums}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
 
-        <Text
+        {/* <Text
           style={{
             ...Fonts.Bold18White,
             marginBottom: Default.fixPadding * 1.5,
@@ -517,7 +570,7 @@ const ArtistScreen = (props) => {
           renderItem={renderItemArtist}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
       </ScrollView>
       <BottomMusic onSelect={() => props.navigation.navigate("playScreen")} />
     </SafeAreaView>

@@ -11,15 +11,19 @@ import {
   Platform,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Colors, Fonts, Default } from "../constants/style";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomMusic from "../components/bottomMusic";
 import { useAuthentication } from '../utils/hooks/useAuthentication';
+// import Firebase from "firebase";
+import { getDatabase, ref, onValue, query, orderByChild, limitToFirst } from "firebase/database";
+import {ref as s_ref, } from "firebase/storage";
 const { width } = Dimensions.get("window");
-
+const DB = getDatabase();
 const HomeScreen = (props) => {
+
   const { t, i18n } = useTranslation();
   const { user } = useAuthentication();
   const isRtl = i18n.dir() === "rtl";
@@ -27,7 +31,29 @@ const HomeScreen = (props) => {
   function tr(key) {
     return t(`homeScreen:${key}`);
   }
-  const artistsData = [
+  useEffect(() => {
+    const collection = ref(DB, "artists/");
+    const topArtistsRef = query(collection, orderByChild("follows"), limitToFirst(5))
+    console.log(topArtistsRef,"top")
+    onValue(topArtistsRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data,"topdata")
+      let artData = [];
+      if(data == null){
+        setArtistsData([]);
+        return;
+      }
+      Object.keys(data).map(key =>{
+        artData.push({
+          ...data[key],
+          key:key
+        })
+      })
+      setArtistsData(artData)
+
+    })
+  }, [])
+  const [artistsData, setArtistsData] = useState([
     {
       key: "1",
       name: "Sonu Nigam",
@@ -58,19 +84,21 @@ const HomeScreen = (props) => {
       name: "Vishal Shekhar",
       image: require("../assets/image/vishal.png"),
     },
-  ];
+  ]);
+
   const renderItemArtists = ({ item, index }) => {
     const isFirst = index === 0;
+    console.log(item.ImageURL,"name")
     return (
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("artistScreen")}
+        onPress={() => props.navigation.navigate("artistScreen",{item})}
         style={{
           marginLeft: isFirst ? Default.fixPadding * 1.5 : 0,
           marginRight: Default.fixPadding * 1.5,
           marginBottom: Default.fixPadding * 2,
         }}
       >
-        <Image source={item.image} />
+        <Image style = {{height:100, width:100, borderRadius:50}} source={{uri:item.ImageURL}} />
         <Text
           style={{
             ...Fonts.SemiBold14White,
@@ -371,7 +399,7 @@ const HomeScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
       <StatusBar
         backgroundColor={Colors.boldBlack}
         barStyle={Platform.OS === "android" ? "light-content" : "default"}
@@ -380,7 +408,7 @@ const HomeScreen = (props) => {
         style={{
           flexDirection: isRtl ? "row-reverse" : "row",
           margin: Default.fixPadding * 1.5,
-          backgroundColor: Colors.boldBlack,
+          backgroundColor: Colors.darkBlue,
         }}
       >
         <View style={{ flex: 9 }}>
@@ -499,7 +527,7 @@ const HomeScreen = (props) => {
           showsHorizontalScrollIndicator={false}
         />
 
-        <View
+        {/* <View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -513,15 +541,15 @@ const HomeScreen = (props) => {
           >
             <Text style={{ ...Fonts.Bold14Primary }}>{tr("seeAll")}</Text>
           </TouchableOpacity>
-        </View>
-        <FlatList
+        </View> */}
+        {/* <FlatList
           horizontal
           nestedScrollEnabled
           data={recentlyPlayed}
           renderItem={renderItemRecentlyPlayed}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
 
         <View
           style={{

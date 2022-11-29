@@ -26,7 +26,6 @@ const MainNavigation = (props) => {
     </NavigationContainer>
   );
 };
-
 const ReloadAppOnLanguageChange = withTranslation("translation", {
   bindI18n: "languageChanged",
   bindStore: false,
