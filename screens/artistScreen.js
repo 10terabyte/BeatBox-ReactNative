@@ -141,6 +141,11 @@ const ArtistScreen = (props) => {
       target_item: "artist",
       follower: user.uid
     });
+    update(ref(DB), {
+      [`/artists/${props.route.params.itme.key}`]:{
+        followers:followers*1+1
+      }
+    })
     console.log("add")
     // const followCollection = query(ref(DB, "follows"), equalTo("artist", "target"), equalTo(props.route.params.item.key, "target_key"), equalTo(user.uid, "user"))
   }
