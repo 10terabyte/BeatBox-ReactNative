@@ -22,8 +22,8 @@ import MainBottomSheet from "../components/mainBottomSheet";
 import AddToPlayList from "../components/addToPlayList";
 import NewPlayList from "../components/newPlayList";
 import { useAuthentication } from '../utils/hooks/useAuthentication';
-import { getDatabase, ref, onValue, query as d_query, get, child, equalTo, where as db_where } from "firebase/database";
-import { collection, doc, addDoc, getFirestore, setDoc, query, getDocs, where, getCountFromServer } from "firebase/firestore";
+import { getDatabase, ref, onValue, update, query as d_query, get, child, equalTo, where as db_where, orderByChild, limitToFirst } from "firebase/database";
+import { collection, doc, addDoc, getFirestore, setDoc, query, getDocs, where, getCountFromServer, limit } from "firebase/firestore";
 import { floor } from "react-native-reanimated";
 const DB = getDatabase();
 
@@ -52,14 +52,32 @@ const ArtistScreen = (props) => {
   }, []);
 
   useEffect(() => {
-    // const beatCollection = d_query(ref(DB, "beats"),equalTo(props.route.params.item.key,""))
-  },[])
+    console.log(props.route.params.item.key, "artist")
+    const beatCollection = d_query(ref(DB, "beats"), orderByChild("track_artist"), equalTo(props.route.params.item.key));
+    console.log(beatCollection, "beatCollection")
+    onValue(beatCollection, (snapshot) => {
+      let data = snapshot.val();
+      let _beatData = [];
+      if (snapshot.val() == null) {
+        setBeatList([]);
+        return;
+      }
+      Object.keys(data).map(beatKey => {
+        _beatData.push({
+          ...data[beatKey],
+          key: beatKey
+        })
+      });
+      setBeatList(_beatData);
+    })
+  }, [props.route.params.item.key])
 
   const [visible, setVisible] = useState(false);
 
   const toggleClose = () => {
     setVisible(!visible);
   };
+  const [selectedBeat, setSelectedBeat] = useState();
 
   const [addPlayList, setAddPlayList] = useState(false);
 
@@ -85,7 +103,7 @@ const ArtistScreen = (props) => {
       const StoreDB = getFirestore();
       const q = query(collection(StoreDB, "follows"), where("target", "==", props.route.params.item.key))
       const followNum = await getCountFromServer(q);
-      console.log(followNum, "follownum")
+      // console.log(followNum, "follownum")
       setFollowers(followNum.data().count)
     }
     getFollowers();
@@ -127,8 +145,9 @@ const ArtistScreen = (props) => {
     const q = query(collection(StoreDB, "follows"), where("follower", "==", user.uid), where("target", "==", props.route.params.item.key), where("target_item", "==", "artist"))
     const querySnapshot = await getDocs(q);
     let data = [];
+    if(querySnapshot)
     querySnapshot.forEach(doc => {
-      console.log(doc.id, "=>", doc.data())
+      // console.log(doc.id, "=>", doc.data())
       data.push(doc);
 
     })
@@ -142,11 +161,9 @@ const ArtistScreen = (props) => {
       follower: user.uid
     });
     update(ref(DB), {
-      [`/artists/${props.route.params.itme.key}`]:{
-        followers:followers*1+1
-      }
+      [`/artists/${props.route.params.item.key}/follows`]: followers * 1 + 1
     })
-    console.log("add")
+    // console.log("add")
     // const followCollection = query(ref(DB, "follows"), equalTo("artist", "target"), equalTo(props.route.params.item.key, "target_key"), equalTo(user.uid, "user"))
   }
   const renderItemAlbums = ({ item, index }) => {
@@ -247,44 +264,6 @@ const ArtistScreen = (props) => {
     );
   };
 
-  const playListData = [
-    {
-      key: "1",
-      name: "Ek tarafa",
-      singer: "Dhvni Bhanushali",
-      image: require("../assets/image/s1.png"),
-    },
-    {
-      key: "2",
-      name: "Kesariya",
-      singer: "Arijit Singh",
-      image: require("../assets/image/s2.png"),
-    },
-    {
-      key: "3",
-      name: "Kar Gayi Chull",
-      singer: "Badshah,Neha Kakkar",
-      image: require("../assets/image/s3.png"),
-    },
-    {
-      key: "4",
-      name: "Just Dance",
-      singer: "Lady Gaga",
-      image: require("../assets/image/s4.png"),
-    },
-    {
-      key: "5",
-      name: "Call Me Maybe",
-      singer: "Carly Rae Jepsen",
-      image: require("../assets/image/s5.png"),
-    },
-    {
-      key: "6",
-      name: "Kar Gayi Chull",
-      singer: "Badshah,Neha Kakkar",
-      image: require("../assets/image/s6.png"),
-    },
-  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
@@ -312,104 +291,105 @@ const ArtistScreen = (props) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <View
+        style={{
+          marginVertical: Default.fixPadding * 1.5,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Image source={{ uri: props.route.params.item.ImageURL }} style={{ width: "100%", height: 150 }} />
+      </View>
+      <View
+        style={{
+          ...Default.shadow,
+          backgroundColor: Colors.lightBlack,
+          justifyContent: "center",
+          flexDirection: isRtl ? "row-reverse" : "row",
+          paddingVertical: Default.fixPadding,
+          marginBottom: Default.fixPadding * 1.5,
+        }}
+      >
         <View
           style={{
-            marginVertical: Default.fixPadding * 1.5,
-            justifyContent: "center",
-            alignItems: "center",
+            flex: 7,
+            marginHorizontal: Default.fixPadding * 1.5,
+            alignItems: isRtl ? "flex-end" : "flex-start",
           }}
         >
-          <Image source={{ uri: props.route.params.item.ImageURL }} style={{ width: "100%", height: 150 }} />
-        </View>
-        <View
-          style={{
-            ...Default.shadow,
-            backgroundColor: Colors.lightBlack,
-            justifyContent: "center",
-            flexDirection: isRtl ? "row-reverse" : "row",
-            paddingVertical: Default.fixPadding,
-            marginBottom: Default.fixPadding * 1.5,
-          }}
-        >
-          <View
+          <Text style={{ ...Fonts.Bold18White }}>{props.route.params.item.name}</Text>
+          <Text
             style={{
-              flex: 7,
-              marginHorizontal: Default.fixPadding * 1.5,
-              alignItems: isRtl ? "flex-end" : "flex-start",
+              ...Fonts.Medium14White,
+              marginVertical: Default.fixPadding * 0.5,
             }}
           >
-            <Text style={{ ...Fonts.Bold18White }}>{props.route.params.item.name}</Text>
-            <Text
-              style={{
-                ...Fonts.Medium14White,
-                marginVertical: Default.fixPadding * 0.5,
-              }}
-            >
-              {followers ?? 0}  &nbsp;
-              {tr("followers")}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                handleFollow();
-              }}>
+            {followers ?? 0}  &nbsp;
+            {tr("followers")}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              handleFollow();
+            }}>
 
 
-              <View
-                style={{
-                  ...Default.shadow,
-                  backgroundColor: Colors.extraBlack,
-                  borderRadius: 5,
-                  borderWidth: 1.5,
-                  borderColor: Colors.white,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: width / 4.5,
-                  marginVertical: Default.fixPadding * 0.5,
-                }}
-
-              >
-                <Text
-                  style={{
-                    ...Fonts.Bold14White,
-                    padding: Default.fixPadding * 0.5,
-                  }}
-                >
-                  {tr("follow")}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flex: 3,
-              justifyContent: "center",
-              alignItems: "center",
-              marginHorizontal: Default.fixPadding * 1.5,
-            }}
-          >
             <View
               style={{
-                ...Default.shadowPrimary,
-                backgroundColor: Colors.primary,
+                ...Default.shadow,
+                backgroundColor: Colors.extraBlack,
                 borderRadius: 5,
+                borderWidth: 1.5,
+                borderColor: Colors.white,
                 justifyContent: "center",
                 alignItems: "center",
+                width: width / 4.5,
+                marginVertical: Default.fixPadding * 0.5,
               }}
+
             >
               <Text
-                numberOfLines={1}
                 style={{
-                  ...Fonts.Bold16White,
-                  paddingHorizontal: Default.fixPadding * 1.5,
-                  paddingVertical: Default.fixPadding * 0.5,
+                  ...Fonts.Bold14White,
+                  padding: Default.fixPadding * 0.5,
                 }}
               >
-                {tr("playAll")}
+                {tr("follow")}
               </Text>
             </View>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flex: 3,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: Default.fixPadding * 1.5,
+          }}
+        >
+          <View
+            style={{
+              ...Default.shadowPrimary,
+              backgroundColor: Colors.primary,
+              borderRadius: 5,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              numberOfLines={1}
+              style={{
+                ...Fonts.Bold16White,
+                paddingHorizontal: Default.fixPadding * 1.5,
+                paddingVertical: Default.fixPadding * 0.5,
+              }}
+            >
+              {tr("playAll")}
+            </Text>
           </View>
         </View>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+
 
         <View
           style={{
@@ -433,7 +413,7 @@ const ArtistScreen = (props) => {
             </Text>
           </TouchableOpacity> */}
         </View>
-        {playListData.map((item, index) => {
+        {beatList.map((item, index) => {
           const isFirst = index === 0;
           return (
             <View
@@ -449,9 +429,9 @@ const ArtistScreen = (props) => {
                   flex: 9,
                   flexDirection: isRtl ? "row-reverse" : "row",
                 }}
-                onPress={() => props.navigation.navigate("playScreen")}
+                onPress={() => props.navigation.navigate("playScreen", { item })}
               >
-                <Image source={item.image} />
+                <Image source={{ uri: item.track_thumbnail }} style={{ width: 50, height: 50, borderRadius: 5 }} />
                 <View
                   style={{
                     justifyContent: "center",
@@ -466,19 +446,19 @@ const ArtistScreen = (props) => {
                         : Fonts.SemiBold16White),
                     }}
                   >
-                    {item.name}
+                    {item.track_name}
                   </Text>
                   <Text
                     style={{
                       ...Fonts.SemiBold14Grey,
                     }}
                   >
-                    {item.singer}
+                    {props.route.params.item.name}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setVisible(true)}
+                onPress={() => {setVisible(true); setSelectedBeat(item); }}
                 style={{
                   flex: 1,
                   justifyContent: "center",
@@ -533,12 +513,14 @@ const ArtistScreen = (props) => {
             setNewPlayList(true);
           }}
           isClose={toggleCloseAddPlayList}
+          beat = {selectedBeat}
         />
         <NewPlayList
           visible={newPlayList}
           onBackButtonPress={toggleCloseNewPlayList}
           onBackdropPress={toggleCloseNewPlayList}
           cancel={toggleCloseNewPlayList}
+          beat = {selectedBeat}
         />
 
         {/* <Text

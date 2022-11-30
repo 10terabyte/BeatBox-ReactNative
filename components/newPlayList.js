@@ -9,10 +9,12 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Colors, Fonts, Default } from "../constants/style";
 import { BottomSheet } from "react-native-btr";
-
+import { useAuthentication } from "../utils/hooks/useAuthentication";
+import { getDatabase, ref, query, push, update, onValue, equalTo, get } from "firebase/database";
+const DB = getDatabase();
 const NewPlayList = (props) => {
   const { t, i18n } = useTranslation();
-
+  const {user} = useAuthentication();
   const isRtl = i18n.dir() === "rtl";
 
   function tr(key) {
@@ -20,6 +22,17 @@ const NewPlayList = (props) => {
   }
   const [title, onChangeTitle] = useState();
   const [description, onChangeDescription] = useState();
+  const handleCreate = ()=>{
+    let newkey = push(ref(DB,"playlists")).key;
+    update(ref(DB, "playlists/"+newkey),{
+      name:title,
+      description:description,
+      user:user.uid,
+      amount:1,
+      image:props.beat.track_thumbnail,
+    })
+    props.cancel();
+  }
   return (
     <BottomSheet
       visible={props.visible}
@@ -109,7 +122,10 @@ const NewPlayList = (props) => {
             <Text style={{ ...Fonts.Bold18Black }}>{tr("cancel")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={props.cancel}
+            onPress={()=>{
+              handleCreate()
+              
+            }}
             style={{
               flex: 1,
               backgroundColor: Colors.primary,

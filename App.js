@@ -1,7 +1,7 @@
 import i18n from "./languages/index"; //don't remove this line
 import React from "react";
 import "react-native-gesture-handler";
-import { useFonts } from "expo-font";
+import { useFonts, loadAsync } from "expo-font";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   createStackNavigator,
@@ -34,6 +34,7 @@ const ReloadAppOnLanguageChange = withTranslation("translation", {
 
 export default function App() {
   const [loaded] = useFonts({
+    
     Regular: require("./assets/font/Mulish-Regular.ttf"),
     Medium: require("./assets/font/Mulish-Medium.ttf"),
     SemiBold: require("./assets/font/Mulish-SemiBold.ttf"),

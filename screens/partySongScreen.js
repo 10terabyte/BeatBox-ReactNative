@@ -18,12 +18,13 @@ import BottomMusic from "../components/bottomMusic";
 import MainBottomSheet from "../components/mainBottomSheet";
 import AddToPlayList from "../components/addToPlayList";
 import NewPlayList from "../components/newPlayList";
-
+import { getDatabase, ref, query, onValue, orderByChild, equalTo, set } from "firebase/database";
+const DB = getDatabase();
 const PartySongScreen = (props) => {
   const { t, i18n } = useTranslation();
 
   const isRtl = i18n.dir() === "rtl";
-
+  const [beatsOfPlayList, setBeatsOfPlayList] = useState([]);
   function tr(key) {
     return t(`partySongScreen:${key}`);
   }
@@ -38,6 +39,73 @@ const PartySongScreen = (props) => {
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", backAction);
   }, []);
+  useEffect(() => {
+    onValue(query(ref(DB, "/beatsOfPlayList"), orderByChild("PLKey"), equalTo(props.route.params.item.key)),
+      async (snapshot) => {
+        let data = snapshot.val();
+        let _beatsOfPlayList = [];
+        if (data == null) {
+          setBeatsOfPlayList([]);
+          return;
+        }
+        Object.keys(data).map(key => {
+          _beatsOfPlayList.push({
+            ...data[key],
+            key
+          });
+
+        });
+        // console.log(_beatsOfPlayList, "beatsofPlaylist")
+        let promises = [];
+
+        _beatsOfPlayList.forEach((item, index) => {
+          promises.push(new Promise((resolve, reject) => {
+
+            onValue(ref(DB, "beats/" + item.BtKey), snapshot => {
+              let beatData = snapshot.val();
+
+              if (beatData == null) {
+                resolve();
+                return;
+
+              }
+              if (beatData.track_artist) {
+                onValue(ref(DB, "artists/" + beatData.track_artist), snapshot => {
+                  _beatsOfPlayList[index] = {
+                    ...item,
+                    key: item.BtKey,
+                    ...beatData,
+                   
+                  }
+
+                  if (snapshot.val()) {
+                    _beatsOfPlayList[index].singer=snapshot.val().name
+                  }
+                  resolve();
+                })
+              }
+              else {
+
+                _beatsOfPlayList[index] = {
+                  ...item,
+                  key: item.BtKey,
+                  ...beatData
+                }
+
+                // console.log(_beatsOfPlayList,"beatdata")
+                resolve();
+              }
+            }, { onlyOnce: true })
+
+          }))
+
+        })
+        await Promise.all(promises);
+        // console.log(_beatsOfPlayList,"beatsofplaylist")
+        setBeatsOfPlayList(_beatsOfPlayList);
+      });
+
+  }, [])
 
   const [visible, setVisible] = useState(false);
 
@@ -64,83 +132,11 @@ const PartySongScreen = (props) => {
       message: toString(),
     });
   };
-  const playListData = [
-    {
-      key: "1",
-      name: "Kala chasma",
-      singer: "Amar Arshi",
-      image: require("../assets/image/p1.png"),
-    },
-    {
-      key: "2",
-      name: "The Hook Up ",
-      singer: "Shekhar Ravjiani",
-      image: require("../assets/image/p2.png"),
-    },
-    {
-      key: "3",
-      name: "Kar Gayi Chull",
-      singer: "Badshah,Neha Kakkar",
-      image: require("../assets/image/p3.png"),
-    },
-    {
-      key: "4",
-      name: "Just Dance",
-      singer: "Lady Gaga",
-      image: require("../assets/image/p4.png"),
-    },
-    {
-      key: "5",
-      name: "Dancing With Myself",
-      singer: "Billy Idol",
-      image: require("../assets/image/p5.png"),
-    },
-    {
-      key: "6",
-      name: "Call Me Maybe",
-      singer: "Carly Rae Jepsen",
-      image: require("../assets/image/p6.png"),
-    },
-    {
-      key: "7",
-      name: "It's the Time to Disco",
-      singer: "Shaan,Vasundhara Das",
-      image: require("../assets/image/p7.png"),
-    },
-    {
-      key: "8",
-      name: "London Thumakda",
-      singer: "Labh Janjua, Sonu Kakkar",
-      image: require("../assets/image/p8.png"),
-    },
-    {
-      key: "9",
-      name: "Besharmi Ki Height",
-      singer: "Shalmali Kholgade",
-      image: require("../assets/image/p9.png"),
-    },
-    {
-      key: "10",
-      name: "Crazy Kiya Re",
-      singer: "Sunidhi Chauhan",
-      image: require("../assets/image/p10.png"),
-    },
-    {
-      key: "11",
-      name: "In da Club",
-      singer: "50 Cent",
-      image: require("../assets/image/p11.png"),
-    },
-    {
-      key: "12",
-      name: "Desi Girl",
-      singer: "Sunidhi Chauhan",
-      image: require("../assets/image/p12.png"),
-    },
-  ];
 
   const renderItemPlayList = ({ item, index }) => {
     const isFirst = index === 0;
+
+
 
     return (
       <View
@@ -152,10 +148,10 @@ const PartySongScreen = (props) => {
         }}
       >
         <TouchableOpacity
-          onPress={() => props.navigation.navigate("playScreen")}
+          onPress={() => props.navigation.navigate("playScreen", { item })}
           style={{ flex: 9, flexDirection: isRtl ? "row-reverse" : "row" }}
         >
-          <Image source={item.image} />
+          <Image source={{ uri: item.track_thumbnail }} style={{ width: 50, height: 50 }} />
           <View
             style={{
               justifyContent: "center",
@@ -168,7 +164,7 @@ const PartySongScreen = (props) => {
                 ...(isFirst ? Fonts.SemiBold16Primary : Fonts.SemiBold16White),
               }}
             >
-              {item.name}
+              {item.track_name}
             </Text>
             <Text
               style={{
@@ -179,7 +175,7 @@ const PartySongScreen = (props) => {
             </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => setVisible(true)}
           style={{
             flex: 1,
@@ -195,15 +191,15 @@ const PartySongScreen = (props) => {
               justifyContent: "center",
             }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
       <StatusBar
-        backgroundColor={Colors.boldBlack}
+        backgroundColor={Colors.black}
         barStyle={Platform.OS === "android" ? "light-content" : "default"}
       />
       <View
@@ -211,7 +207,7 @@ const PartySongScreen = (props) => {
           flexDirection: isRtl ? "row-reverse" : "row",
           marginHorizontal: Default.fixPadding * 1.5,
           marginVertical: Default.fixPadding,
-          backgroundColor: Colors.boldBlack,
+          backgroundColor: Colors.darkBlue,
         }}
       >
         <View style={{ flex: 7, flexDirection: isRtl ? "row-reverse" : "row" }}>
@@ -276,8 +272,8 @@ const PartySongScreen = (props) => {
         }}
       >
         <Image
-          source={require("../assets/image/party.png")}
-          style={{ resizeMode: "cover" }}
+          source={{ uri: props.route.params.item.image }}
+          style={{ resizeMode: "cover", width: "100%", height: 300, objectFit: "fill" }}
         />
       </View>
       <View
@@ -305,7 +301,7 @@ const PartySongScreen = (props) => {
           <View
             style={{
               ...Default.shadowPrimary,
-              backgroundColor: Colors.primary,
+              backgroundColor: Colors.darkBlue,
               borderRadius: 5,
               justifyContent: "center",
               alignItems: "center",
@@ -330,11 +326,11 @@ const PartySongScreen = (props) => {
           marginHorizontal: Default.fixPadding * 1.5,
         }}
       >
-        <Text style={{ ...Fonts.Bold18White }}>{tr("partySongs")}</Text>
+        <Text style={{ ...Fonts.Bold18White }}>Songs of this list</Text>
       </View>
 
       <FlatList
-        data={playListData}
+        data={beatsOfPlayList}
         renderItem={renderItemPlayList}
         keyExtractor={(item) => item.key}
         showsVerticalScrollIndicator={false}

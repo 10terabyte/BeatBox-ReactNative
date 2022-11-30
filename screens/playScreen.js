@@ -124,7 +124,7 @@ const PlayScreen = (props) => {
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <ImageBackground
-          source={require("../assets/image/music.png")}
+          source={props.route.params && props.route.params.item.track_thumbnail?{uri:props.route.params.item.track_thumbnail}:require("../assets/image/music.png")}
           style={{ flex: 1 }}
         >
           <View style={{ justifyContent: "space-between", flex: 1 }}>

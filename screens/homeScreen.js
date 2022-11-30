@@ -18,7 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import BottomMusic from "../components/bottomMusic";
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 // import Firebase from "firebase";
-import { getDatabase, ref, onValue, query, orderByChild, limitToFirst } from "firebase/database";
+import { getDatabase, ref, onValue, query, orderByChild, limitToFirst, equalTo } from "firebase/database";
 import {ref as s_ref, } from "firebase/storage";
 const { width } = Dimensions.get("window");
 const DB = getDatabase();
@@ -53,38 +53,7 @@ const HomeScreen = (props) => {
 
     })
   }, [])
-  const [artistsData, setArtistsData] = useState([
-    {
-      key: "1",
-      name: "Sonu Nigam",
-      image: require("../assets/image/sonu.png"),
-    },
-    {
-      key: "2",
-      name: "Arijit Singh",
-      image: require("../assets/image/arjit.png"),
-    },
-    {
-      key: "3",
-      name: "Shakira",
-      image: require("../assets/image/shakira.png"),
-    },
-    {
-      key: "4",
-      name: "Darshan Raval",
-      image: require("../assets/image/darshn.png"),
-    },
-    {
-      key: "5",
-      name: "Neha Kakkar",
-      image: require("../assets/image/neha.png"),
-    },
-    {
-      key: "6",
-      name: "Vishal Shekhar",
-      image: require("../assets/image/vishal.png"),
-    },
-  ]);
+  const [artistsData, setArtistsData] = useState([]);
 
   const renderItemArtists = ({ item, index }) => {
     const isFirst = index === 0;
@@ -112,38 +81,38 @@ const HomeScreen = (props) => {
     );
   };
 
-  const recentlyPlayed = [
-    {
-      key: "1",
-      name: "Ek tarafa",
-      image: require("../assets/image/pic1.png"),
-      singer: "Dhvni Bhanushali",
-    },
-    {
-      key: "2",
-      name: "Kesariya",
-      image: require("../assets/image/pic2.png"),
-      singer: "Arijit Singh",
-    },
-    {
-      key: "3",
-      name: "Raataan lambiyan ",
-      image: require("../assets/image/pic3.png"),
-      singer: "Dhvni Bhanushali",
-    },
-    {
-      key: "4",
-      name: "Halki Si Barsaat",
-      image: require("../assets/image/pic4.png"),
-      singer: "Saaj Bhatt",
-    },
-    {
-      key: "5",
-      name: "Ek Tu Hi Toh Hai",
-      image: require("../assets/image/pic5.png"),
-      singer: "Stebin Ben",
-    },
-  ];
+  // const recentlyPlayed = [
+  //   {
+  //     key: "1",
+  //     name: "Ek tarafa",
+  //     image: require("../assets/image/pic1.png"),
+  //     singer: "Dhvni Bhanushali",
+  //   },
+  //   {
+  //     key: "2",
+  //     name: "Kesariya",
+  //     image: require("../assets/image/pic2.png"),
+  //     singer: "Arijit Singh",
+  //   },
+  //   {
+  //     key: "3",
+  //     name: "Raataan lambiyan ",
+  //     image: require("../assets/image/pic3.png"),
+  //     singer: "Dhvni Bhanushali",
+  //   },
+  //   {
+  //     key: "4",
+  //     name: "Halki Si Barsaat",
+  //     image: require("../assets/image/pic4.png"),
+  //     singer: "Saaj Bhatt",
+  //   },
+  //   {
+  //     key: "5",
+  //     name: "Ek Tu Hi Toh Hai",
+  //     image: require("../assets/image/pic5.png"),
+  //     singer: "Stebin Ben",
+  //   },
+  // ];
   const renderItemRecentlyPlayed = ({ item, index }) => {
     const isFirst = index === 0;
     return (
@@ -178,45 +147,39 @@ const HomeScreen = (props) => {
     );
   };
 
-  const playlistForYou = [
-    {
-      key: "1",
-      name: "Hindi Romance",
-      image: require("../assets/image/song1.png"),
-    },
-    {
-      key: "2",
-      name: "International",
-      image: require("../assets/image/song2.png"),
-    },
-    {
-      key: "3",
-      name: "Hindi song",
-      image: require("../assets/image/song3.png"),
-    },
-    {
-      key: "4",
-      name: "Heartbreak song",
-      image: require("../assets/image/song4.png"),
-    },
-    {
-      key: "5",
-      name: "Workout song",
-      image: require("../assets/image/song5.png"),
-    },
-  ];
+  const [playlistForYou, setPlayListForYou] = useState([]);
+  useEffect(()=>{
+    if(!user.uid)
+      return;
+    onValue(query(ref(DB,"playlists"),orderByChild("user"),equalTo(user.uid)),snapshot=>{
+      let data = snapshot.val();
+      if(data == null){
+        setPlayListForYou([]);
+        return;
+      }
+      let _playListForYou = [];
+      Object.keys(data).map(key=>{
+        _playListForYou.push({
+          ...data[key],
+          key
+
+        })
+      });
+      setPlayListForYou(_playListForYou);
+    })
+  }, [user])
   const renderItemPlaylistForYou = ({ item, index }) => {
     const isFirst = index === 0;
     return (
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("partySongScreen")}
+        onPress={() => props.navigation.navigate("partySongScreen",{item})}
         style={{
           marginLeft: isFirst ? Default.fixPadding * 1.5 : 0,
           marginRight: Default.fixPadding * 1.5,
           marginBottom: Default.fixPadding * 2,
         }}
       >
-        <Image source={item.image} />
+        <Image source={{uri:item.image}} style={{width:100, height:100, borderRadius:8}} />
         <Text
           style={{
             ...Fonts.SemiBold14White,
@@ -282,121 +245,121 @@ const HomeScreen = (props) => {
     );
   };
 
-  const bhakti = [
-    {
-      key: "1",
-      name: "Arti collection",
-      image: require("../assets/image/god1.png"),
-    },
-    {
-      key: "2",
-      name: "Collection of shiv",
-      image: require("../assets/image/god2.png"),
-    },
-    {
-      key: "3",
-      name: "Collection of Durga",
-      image: require("../assets/image/god3.png"),
-    },
-    {
-      key: "4",
-      name: "Collection of Laxmi",
-      image: require("../assets/image/god4.png"),
-    },
-    {
-      key: "5",
-      name: "Collection of Krishna",
-      image: require("../assets/image/god5.png"),
-    },
-    {
-      key: "6",
-      name: "Collection of hanu..",
-      image: require("../assets/image/god6.png"),
-    },
-  ];
-  const renderItemBhakti = ({ item, index }) => {
-    const isFirst = index === 0;
-    return (
-      <TouchableOpacity
-        onPress={() => props.navigation.navigate("partySongScreen")}
-        style={{
-          marginLeft: isFirst ? Default.fixPadding * 1.5 : 0,
-          marginRight: Default.fixPadding * 1.5,
-          marginBottom: Default.fixPadding * 2,
-        }}
-      >
-        <Image source={item.image} />
-        <Text
-          style={{
-            ...Fonts.SemiBold14White,
-            marginTop: Default.fixPadding * 0.5,
-            textAlign: "center",
-          }}
-        >
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+  // const bhakti = [
+  //   {
+  //     key: "1",
+  //     name: "Arti collection",
+  //     image: require("../assets/image/god1.png"),
+  //   },
+  //   {
+  //     key: "2",
+  //     name: "Collection of shiv",
+  //     image: require("../assets/image/god2.png"),
+  //   },
+  //   {
+  //     key: "3",
+  //     name: "Collection of Durga",
+  //     image: require("../assets/image/god3.png"),
+  //   },
+  //   {
+  //     key: "4",
+  //     name: "Collection of Laxmi",
+  //     image: require("../assets/image/god4.png"),
+  //   },
+  //   {
+  //     key: "5",
+  //     name: "Collection of Krishna",
+  //     image: require("../assets/image/god5.png"),
+  //   },
+  //   {
+  //     key: "6",
+  //     name: "Collection of hanu..",
+  //     image: require("../assets/image/god6.png"),
+  //   },
+  // ];
+  // const renderItemBhakti = ({ item, index }) => {
+  //   const isFirst = index === 0;
+  //   return (
+  //     <TouchableOpacity
+  //       onPress={() => props.navigation.navigate("partySongScreen")}
+  //       style={{
+  //         marginLeft: isFirst ? Default.fixPadding * 1.5 : 0,
+  //         marginRight: Default.fixPadding * 1.5,
+  //         marginBottom: Default.fixPadding * 2,
+  //       }}
+  //     >
+  //       <Image source={item.image} />
+  //       <Text
+  //         style={{
+  //           ...Fonts.SemiBold14White,
+  //           marginTop: Default.fixPadding * 0.5,
+  //           textAlign: "center",
+  //         }}
+  //       >
+  //         {item.name}
+  //       </Text>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
-  const mood = [
-    {
-      key: "1",
-      name: "Happy",
-      image: require("../assets/image/mood1.png"),
-    },
-    {
-      key: "2",
-      name: "Dance",
-      image: require("../assets/image/mood2.png"),
-    },
-    {
-      key: "3",
-      name: "Sad",
-      image: require("../assets/image/mood3.png"),
-    },
-    {
-      key: "4",
-      name: "Workout",
-      image: require("../assets/image/mood4.png"),
-    },
-    {
-      key: "5",
-      name: "Drive",
-      image: require("../assets/image/mood5.png"),
-    },
-    {
-      key: "6",
-      name: "Shock",
-      image: require("../assets/image/mood6.png"),
-    },
-  ];
-  const renderItemMood = ({ item, index }) => {
-    const isFirst = index === 0;
-    return (
-      <TouchableOpacity
-        onPress={() => props.navigation.navigate("partySongScreen")}
-        style={{
-          marginLeft: isFirst ? Default.fixPadding * 1.5 : 0,
-          marginRight: Default.fixPadding * 1.5,
-          marginBottom: Default.fixPadding * 2,
-        }}
-      >
-        <Image source={item.image} />
-        <Text
-          style={{
-            ...Fonts.Bold16White,
-            marginVertical: Default.fixPadding,
-            alignSelf: "center",
-            position: "absolute",
-            bottom: 0,
-          }}
-        >
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+  // const mood = [
+  //   {
+  //     key: "1",
+  //     name: "Happy",
+  //     image: require("../assets/image/mood1.png"),
+  //   },
+  //   {
+  //     key: "2",
+  //     name: "Dance",
+  //     image: require("../assets/image/mood2.png"),
+  //   },
+  //   {
+  //     key: "3",
+  //     name: "Sad",
+  //     image: require("../assets/image/mood3.png"),
+  //   },
+  //   {
+  //     key: "4",
+  //     name: "Workout",
+  //     image: require("../assets/image/mood4.png"),
+  //   },
+  //   {
+  //     key: "5",
+  //     name: "Drive",
+  //     image: require("../assets/image/mood5.png"),
+  //   },
+  //   {
+  //     key: "6",
+  //     name: "Shock",
+  //     image: require("../assets/image/mood6.png"),
+  //   },
+  // ];
+  // const renderItemMood = ({ item, index }) => {
+  //   const isFirst = index === 0;
+  //   return (
+  //     <TouchableOpacity
+  //       onPress={() => props.navigation.navigate("partySongScreen")}
+  //       style={{
+  //         marginLeft: isFirst ? Default.fixPadding * 1.5 : 0,
+  //         marginRight: Default.fixPadding * 1.5,
+  //         marginBottom: Default.fixPadding * 2,
+  //       }}
+  //     >
+  //       <Image source={item.image} />
+  //       <Text
+  //         style={{
+  //           ...Fonts.Bold16White,
+  //           marginVertical: Default.fixPadding,
+  //           alignSelf: "center",
+  //           position: "absolute",
+  //           bottom: 0,
+  //         }}
+  //       >
+  //         {item.name}
+  //       </Text>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
@@ -551,7 +514,7 @@ const HomeScreen = (props) => {
           showsHorizontalScrollIndicator={false}
         /> */}
 
-        <View
+        { playlistForYou.length>0&&(<View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -565,7 +528,7 @@ const HomeScreen = (props) => {
           >
             <Text style={{ ...Fonts.Bold14Primary }}>{tr("seeAll")}</Text>
           </TouchableOpacity>
-        </View>
+        </View>)}
         <FlatList
           horizontal
           nestedScrollEnabled
@@ -575,7 +538,7 @@ const HomeScreen = (props) => {
           showsHorizontalScrollIndicator={false}
         />
 
-        <View
+        {/* <View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -597,9 +560,9 @@ const HomeScreen = (props) => {
           renderItem={renderItemFreshMusic}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
 
-        <View
+        {/* <View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -621,9 +584,9 @@ const HomeScreen = (props) => {
           renderItem={renderItemBhakti}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
 
-        <View
+        {/* <View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -637,15 +600,15 @@ const HomeScreen = (props) => {
           >
             <Text style={{ ...Fonts.Bold14Primary }}>{tr("seeAll")}</Text>
           </TouchableOpacity>
-        </View>
-        <FlatList
+        </View> */}
+        {/* <FlatList
           horizontal
           nestedScrollEnabled
           data={mood}
           renderItem={renderItemMood}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
       </ScrollView>
       <BottomMusic onSelect={() => props.navigation.navigate("playScreen")} />
     </SafeAreaView>

@@ -14,7 +14,6 @@ const BottomMusic = (props) => {
     LoadAudio();
     return () => sound.current.unloadAsync();
   }, []);
-
   const LoadAudio = async () => {
     const result = await sound.current.loadAsync(
       require("../assets/music/cuteSmile.mp3"),
