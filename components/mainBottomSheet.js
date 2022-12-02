@@ -138,6 +138,7 @@ const MainBottomSheet = (props) => {
   );
 };
 
+
 export default MainBottomSheet;
 
 const styles = StyleSheet.create({

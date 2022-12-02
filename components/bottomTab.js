@@ -66,8 +66,8 @@ const BottomTab = (props) => {
   }
   const title1 = isRtl ? tr("profile") : tr("home");
   const title2 = isRtl ? tr("home") : tr("profile");
-  const title3 = isRtl ? tr("library") : tr("search");
-  const title4 = isRtl ? tr("search") : tr("library");
+  const title3 = isRtl ? "Playlist" : tr("search");
+  const title4 = isRtl ? tr("search") : "Playlist";
 
   return (
     <>
@@ -106,7 +106,7 @@ const BottomTab = (props) => {
         />
         <Tab.Screen
           name={isRtl ? "libraryScreen" : "searchScreen"}
-          component={isRtl ? LibraryScreen : SearchScreen}
+          component={isRtl ? HomeScreen : SearchScreen}
           options={{
             title: title3,
             tabBarActiveTintColor: Colors.primary,
@@ -122,7 +122,7 @@ const BottomTab = (props) => {
         />
         <Tab.Screen
           name={isRtl ? "searchScreen" : "libraryScreen"}
-          component={isRtl ? SearchScreen : LibraryScreen}
+          component={isRtl ? SearchScreen : HomeScreen}
           options={{
             title: title4,
             tabBarActiveTintColor: Colors.primary,

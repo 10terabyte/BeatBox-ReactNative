@@ -69,6 +69,7 @@ const BottomMusic = (props) => {
         flexDirection: "row",
       }}
     >
+      
       <View
         style={{
           flex: 1,
@@ -77,8 +78,8 @@ const BottomMusic = (props) => {
         }}
       >
         <Image
-          source={require("../assets/image/photo1.png")}
-          style={{ alignSelf: "center" }}
+          source={music.track_thumbnail?{uri:music.track_thumbnail}:require("../assets/image/photo1.png")}
+          style={{ alignSelf: "center",width:50, height: 50 }}
         />
         <View
           style={{

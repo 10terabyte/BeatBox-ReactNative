@@ -154,8 +154,9 @@ const HomeScreen = (props) => {
 
   const [playlistForYou, setPlayListForYou] = useState([]);
   useEffect(()=>{
-    if(!user.uid)
+    if(!user || !user.uid)
       return;
+      console.log(user,"user")
     onValue(query(ref(DB,"playlists"),orderByChild("user"),equalTo(user.uid)),snapshot=>{
       let data = snapshot.val();
       if(data == null){
@@ -380,7 +381,7 @@ const HomeScreen = (props) => {
         }}
       >
         <View style={{ flex: 9 }}>
-          <Text style={{ ...Fonts.Bold18White }}>{tr("hello")} {userData.displayName},</Text>
+          <Text style={{ ...Fonts.Bold18White }}>{tr("hello")} {userData&&userData.displayName},</Text>
           <Text style={{ ...Fonts.SemiBold14Grey }}>{tr("hearToday")}</Text>
         </View>
         <TouchableOpacity
