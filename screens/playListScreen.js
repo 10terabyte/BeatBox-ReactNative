@@ -35,66 +35,7 @@ const PlayListScreen = (props) => {
   }, []);
 
   const playlistForYou = [
-    {
-      key: "1",
-      name: "Hindi Romance",
-      image: require("../assets/image/pList9.png"),
-    },
-    {
-      key: "2",
-      name: "International song",
-      image: require("../assets/image/pList10.png"),
-    },
-    {
-      key: "3",
-      name: "Workout song",
-      image: require("../assets/image/pList11.png"),
-    },
-    {
-      key: "4",
-      name: "Arijit singh special",
-      image: require("../assets/image/pList12.png"),
-    },
-    {
-      key: "5",
-      name: "Heartbreak song",
-      image: require("../assets/image/pList1.png"),
-    },
-    {
-      key: "6",
-      name: "Party song",
-      image: require("../assets/image/pList2.png"),
-    },
-    {
-      key: "7",
-      name: "Latest in dance",
-      image: require("../assets/image/pList3.png"),
-    },
-    {
-      key: "8",
-      name: "Love Hit",
-      image: require("../assets/image/pList4.png"),
-    },
-    {
-      key: "9",
-      name: "90s song",
-      image: require("../assets/image/pList5.png"),
-    },
-    {
-      key: "10",
-      name: "Best of pritam",
-      image: require("../assets/image/pList6.png"),
-    },
-    {
-      key: "11",
-      name: "Best op Kk",
-      image: require("../assets/image/pList7.png"),
-    },
-    {
-      key: "12",
-      name: "Journy song",
-      image: require("../assets/image/pList8.png"),
-    },
+  
   ];
   const renderItemPlaylistForYou = ({ item, index }) => {
     const isEnd =

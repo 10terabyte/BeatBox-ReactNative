@@ -40,61 +40,7 @@ const BhaktiScreen = (props) => {
       name: "Arti collection",
       image: require("../assets/image/bhakti1.png"),
     },
-    {
-      key: "2",
-      name: "Collection of Ganesha",
-      image: require("../assets/image/bhakti2.png"),
-    },
-    {
-      key: "3",
-      name: "Collection of shiv",
-      image: require("../assets/image/fMusic3.png"),
-    },
-    {
-      key: "4",
-      name: "Ramcharitmanas",
-      image: require("../assets/image/bhakti4.png"),
-    },
-    {
-      key: "5",
-      name: "Collection of Durga",
-      image: require("../assets/image/bhakti5.png"),
-    },
-    {
-      key: "6",
-      name: "Collection of Buddha",
-      image: require("../assets/image/bhakti6.png"),
-    },
-    {
-      key: "7",
-      name: "Collection of Laxmi",
-      image: require("../assets/image/bhakti7.png"),
-    },
-    {
-      key: "8",
-      name: "Bhagvat geeta",
-      image: require("../assets/image/bhakti8.png"),
-    },
-    {
-      key: "9",
-      name: "Collection of Krishna",
-      image: require("../assets/image/bhakti9.png"),
-    },
-    {
-      key: "10",
-      name: "Collection of Vishnu",
-      image: require("../assets/image/bhakti10.png"),
-    },
-    {
-      key: "11",
-      name: "Collection of hanu..",
-      image: require("../assets/image/bhakti11.png"),
-    },
-    {
-      key: "12",
-      name: "Collection of Ganesha",
-      image: require("../assets/image/bhakti2.png"),
-    },
+   
   ];
   const renderItemBhaktiData = ({ item, index }) => {
     const isEnd =

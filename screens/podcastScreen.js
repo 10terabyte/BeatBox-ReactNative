@@ -250,7 +250,7 @@ const PodcastScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={{
@@ -277,7 +277,7 @@ const PodcastScreen = (props) => {
           showsHorizontalScrollIndicator={false}
         />
 
-        <View
+        {/* <View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -325,9 +325,9 @@ const PodcastScreen = (props) => {
           renderItem={renderItemFamous}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
 
-        <View
+        {/* <View
           style={{
             flexDirection: isRtl ? "row-reverse" : "row",
             justifyContent: "space-between",
@@ -349,7 +349,7 @@ const PodcastScreen = (props) => {
           renderItem={renderItemMotivation}
           keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
-        />
+        /> */}
       </ScrollView>
       <BottomMusic onSelect={() => props.navigation.navigate("playScreen")} />
     </SafeAreaView>

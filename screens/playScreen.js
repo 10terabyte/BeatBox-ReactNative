@@ -18,8 +18,9 @@ import MainBottomSheet from "../components/mainBottomSheet";
 import AddToPlayList from "../components/addToPlayList";
 import NewPlayList from "../components/newPlayList";
 import { Audio } from "expo-av";
-
+import { useAppContext } from "../context";
 const PlayScreen = (props) => {
+  const {setMusic, music} = useAppContext();
   const { t, i18n } = useTranslation();
 
   const isRtl = i18n.dir() === "rtl";
@@ -38,6 +39,13 @@ const PlayScreen = (props) => {
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", backAction);
   }, []);
+  useEffect(()=>{
+    if(props.route.params.item){
+      setMusic(props.route.params.item);
+    }else{
+      setMusic({});
+    }
+  },[props])
 
   const [isVisible, setIsVisible] = useState(false);
   const [value, setValue] = useState(0);

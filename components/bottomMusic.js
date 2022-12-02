@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Colors, Fonts, Default } from "../constants/style";
 import { Audio } from "expo-av";
-
+import { useAppContext } from "../context";
+import { useNavigation } from '@react-navigation/native';
 const BottomMusic = (props) => {
+  const {music} = useAppContext();
   const [isVisible, setVisible] = useState(false);
-
+  const navigation = useNavigation();
   const sound = React.useRef(new Audio.Sound());
   const [Status, SetStatus] = React.useState(false);
 
@@ -58,7 +60,9 @@ const BottomMusic = (props) => {
 
   return (
     <TouchableOpacity
-      onPress={props.onSelect}
+      onPress={()=>{
+        music.track_name?navigation.navigate("playScreen",{item:music}):""
+      }}
       style={{
         paddingVertical: Default.fixPadding,
         backgroundColor: Colors.primary,
@@ -82,8 +86,8 @@ const BottomMusic = (props) => {
             justifyContent: "center",
           }}
         >
-          <Text style={{ ...Fonts.Bold16White }}>Teri Cute Si Smile </Text>
-          <Text style={{ ...Fonts.SemiBold14White }}>Aroob Khan</Text>
+          <Text style={{ ...Fonts.Bold16White }}> {music.track_name?music.track_name:""}</Text>
+          <Text style={{ ...Fonts.SemiBold14White }}> {music.singer?music.singer:""}</Text>
         </View>
       </View>
       <View

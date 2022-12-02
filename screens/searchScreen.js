@@ -2,9 +2,11 @@ import { Text, View, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Colors, Fonts, Default } from "../constants/style";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import PodcastScreen from "./podcastScreen";
-import AllSongScreen from "./allSongScreen";
-import AlbumsScreen from "./albumsScreen";
+// import PodcastScreen from "./podcastScreen";
+// import AllSongScreen from "./allSongScreen";
+// import AlbumsScreen from "./albumsScreen";
+import ArtistSearchScreen from "./artistSearchScreen";
+import SongSearchScreen from "./songSearchScreen"
 import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -22,7 +24,7 @@ function MyTabBar({ state, descriptors, navigation }) {
   return (
     <View
       style={{
-        backgroundColor: Colors.boldBlack,
+        backgroundColor: Colors.darkBlue,
       }}
     >
       <Text
@@ -35,7 +37,7 @@ function MyTabBar({ state, descriptors, navigation }) {
         {tr("search")}
       </Text>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => navigation.navigate("searchMusicScreen")}
         style={{
           flexDirection: isRtl ? "row-reverse" : "row",
@@ -69,7 +71,7 @@ function MyTabBar({ state, descriptors, navigation }) {
         >
           {tr("search")}
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View
         style={{
@@ -146,8 +148,8 @@ const SearchScreen = (props) => {
   function tr(key) {
     return t(`searchScreen:${key}`);
   }
-  const title = isRtl ? tr("albums") : tr("prodcast");
-  const title2 = isRtl ? tr("prodcast") : tr("albums");
+  const title = "All Artists";
+  // const title2 = isRtl ? tr("prodcast") : tr("albums");
 
   return (
     <Tab.Navigator
@@ -157,26 +159,26 @@ const SearchScreen = (props) => {
       tabBar={(props) => <MyTabBar {...props} />}
     >
       <Tab.Screen
-        name={isRtl ? "albumsScreen" : "podcastScreen"}
-        component={isRtl ? AlbumsScreen : PodcastScreen}
+        name="allArtist"
+        component={ArtistSearchScreen}
         options={{
           title: title,
         }}
       />
       <Tab.Screen
         name="allSongScreen"
-        component={AllSongScreen}
+        component={SongSearchScreen}
         options={{
-          title: tr("allSongs"),
+          title: "All Songs",
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name={isRtl ? "podcastScreen" : "albumsScreen"}
         component={isRtl ? PodcastScreen : AlbumsScreen}
         options={{
           title: title2,
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };

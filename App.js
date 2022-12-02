@@ -12,6 +12,7 @@ import firebaseApp from './config/firebase'
 import { useAuthentication } from './utils/hooks/useAuthentication';
 import AuthStack from "./stacks/AuthStack";
 import MainStack from "./stacks/MainStack";
+import { AppWrapper } from "./context";
 const Stack = createStackNavigator();
  
 const MainNavigation = (props) => {
@@ -46,5 +47,5 @@ export default function App() {
     return null;
   }
 
-  return <ReloadAppOnLanguageChange />;
+  return <AppWrapper><ReloadAppOnLanguageChange /></AppWrapper>;
 }

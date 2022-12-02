@@ -21,10 +21,14 @@ import { BottomSheet } from "react-native-btr";
 import Toast from "react-native-root-toast";
 import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
+// import { useAuthentication } from '../utils/hooks/useAuthentication';
+import { useAppContext } from "../context";
+import { getAuth, updateProfile } from "firebase/auth";
 
 const ModalUpdate = ({ visibleUpdate, children }) => {
   const [showModal, setShowModal] = React.useState(visibleUpdate);
   const scaleValue = React.useRef(new Animated.Value(0)).current;
+
   React.useEffect(() => {
     toggleModal();
   }, [visibleUpdate]);
@@ -61,13 +65,13 @@ const { width } = Dimensions.get("window");
 
 const EditProfileScreen = (props) => {
   const { t, i18n } = useTranslation();
-
+  const {user,setUser} = useAppContext();
   const isRtl = i18n.dir() === "rtl";
-
+  // console.log(user,"user")
   function tr(key) {
     return t(`editProfileScreen:${key}`);
   }
-
+  
   const backAction = () => {
     props.navigation.goBack();
     return true;
@@ -81,15 +85,37 @@ const EditProfileScreen = (props) => {
 
   const [visibleUpdate, setVisibleUpdate] = useState(false);
 
-  const [text, onChangeText] = useState("Jenny wilson");
-  const [textEmail, onChangeTextEmail] = useState("jennywilson@gmail.com");
-  const [textNo, onChangeTextNo] = useState("99362383432");
+  const [text, onChangeText] = useState("");
+  const [textEmail, onChangeTextEmail] = useState("");
+  const [textNo, onChangeTextNo] = useState("");
   const [visible, setVisible] = useState(false);
-
+  useEffect(()=>{
+    onChangeText(user.displayName);
+    onChangeTextEmail(user.email);
+    onChangeTextNo(user.phoneNumber);
+  },[user])
   const toggleClose = () => {
     setVisible(!visible);
   };
-
+  const UpdateUserProfile = ()=>{
+    const auth = getAuth();
+    console.log(text, textEmail, textNo)
+    updateProfile(auth.currentUser,{
+      displayName:text,
+      phoneNumber:textNo
+    }).then(()=>{
+      
+      
+      setUser({
+        ...user,
+        displayName:text,
+        phoneNumber:textNo
+      });
+      setVisibleUpdate(true);
+      
+    })
+    
+  }
   const toastRemoveImage = () => {
     Toast.show(tr("removeImage"), {
       duration: Toast.durations.SHORT,
@@ -336,11 +362,13 @@ const EditProfileScreen = (props) => {
             selectionColor={Colors.primary}
             value={textEmail}
             keyboardType={"email-address"}
+            editable= {false}
             style={{
               ...Fonts.Medium15LightGrey,
               textAlign: isRtl ? "right" : "left",
             }}
-            placeholder={tr("EnterEmail")}
+            
+           
             placeholderTextColor={Colors.lightGrey}
           />
         </View>
@@ -402,8 +430,8 @@ const EditProfileScreen = (props) => {
           >
             <TouchableOpacity
               onPress={() => {
-                setVisibleUpdate(false);
-                props.navigation.navigate("profileScreen");
+               setVisible(false);
+               props.navigation.navigate("profileScreen");
               }}
             >
               <Text
@@ -420,7 +448,7 @@ const EditProfileScreen = (props) => {
       </ModalUpdate>
 
       <TouchableOpacity
-        onPress={() => setVisibleUpdate(true)}
+        onPress={() =>UpdateUserProfile()}
         style={{
           ...Default.shadow,
           alignItems: "center",

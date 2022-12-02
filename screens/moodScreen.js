@@ -40,61 +40,7 @@ const MoodScreen = (props) => {
       name: "Happy",
       image: require("../assets/image/moodA1.png"),
     },
-    {
-      key: "2",
-      name: "Shock",
-      image: require("../assets/image/moodA2.png"),
-    },
-    {
-      key: "3",
-      name: "Dance",
-      image: require("../assets/image/moodA3.png"),
-    },
-    {
-      key: "4",
-      name: "Party",
-      image: require("../assets/image/moodA4.png"),
-    },
-    {
-      key: "5",
-      name: "Sad",
-      image: require("../assets/image/moodA5.png"),
-    },
-    {
-      key: "6",
-      name: "Sleep",
-      image: require("../assets/image/moodA6.png"),
-    },
-    {
-      key: "7",
-      name: "Workout",
-      image: require("../assets/image/moodA7.png"),
-    },
-    {
-      key: "8",
-      name: "Romance",
-      image: require("../assets/image/moodA8.png"),
-    },
-    {
-      key: "9",
-      name: "Focus",
-      image: require("../assets/image/moodA9.png"),
-    },
-    {
-      key: "10",
-      name: "Drive",
-      image: require("../assets/image/moodA10.png"),
-    },
-    {
-      key: "11",
-      name: "Happy",
-      image: require("../assets/image/moodA1.png"),
-    },
-    {
-      key: "12",
-      name: "Shock",
-      image: require("../assets/image/moodA2.png"),
-    },
+   
   ];
   const renderItemMoodData = ({ item, index }) => {
     const isEnd =

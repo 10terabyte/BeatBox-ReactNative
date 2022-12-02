@@ -20,7 +20,7 @@ export const Colors = {
   blue: "#1E4799",
   yellow: "#D6D1A7",
   lightPink: "#EE7D94",
-  darkBlue:"#061739",
+  darkBlue:"#04276b",
 
 };
 

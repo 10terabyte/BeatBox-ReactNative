@@ -20,9 +20,10 @@ export function useAuthentication() {
     });
 
     return unsubscribeFromAuthStatuChanged;
-  }, []);
+  }, [auth]);
 
   return {
-    user
+    user,
+    setUser
   };
 }

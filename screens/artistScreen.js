@@ -199,38 +199,7 @@ const ArtistScreen = (props) => {
     );
   };
 
-  const artistData = [
-    {
-      key: "1",
-      name: "Sonu",
-      image: require("../assets/image/top1.png"),
-    },
-    {
-      key: "2",
-      name: "lata",
-      image: require("../assets/image/top2.png"),
-    },
-    {
-      key: "3",
-      name: "Shakira",
-      image: require("../assets/image/top3.png"),
-    },
-    {
-      key: "4",
-      name: "Darshan",
-      image: require("../assets/image/top4.png"),
-    },
-    {
-      key: "5",
-      name: "Neha",
-      image: require("../assets/image/top5.png"),
-    },
-    {
-      key: "6",
-      name: "Vishal",
-      image: require("../assets/image/top6.png"),
-    },
-  ];
+  const artistData = [];
   const renderItemArtist = ({ item, index }) => {
     const isFirst = index === 0;
 
@@ -429,7 +398,7 @@ const ArtistScreen = (props) => {
                   flex: 9,
                   flexDirection: isRtl ? "row-reverse" : "row",
                 }}
-                onPress={() => props.navigation.navigate("playScreen", { item })}
+                onPress={() => props.navigation.navigate("playScreen", { item:{...item, singer:props.route.params.item.name} })}
               >
                 <Image source={{ uri: item.track_thumbnail }} style={{ width: 50, height: 50, borderRadius: 5 }} />
                 <View

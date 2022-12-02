@@ -35,71 +35,7 @@ const FreshMusicScreen = (props) => {
   }, []);
 
   const freshNewMusic = [
-    {
-      key: "1",
-      name: "New music hindi",
-      image: require("../assets/image/fMusic1.png"),
-    },
-    {
-      key: "2",
-      name: "New music Panjabi",
-      image: require("../assets/image/fMusic2.png"),
-    },
-    {
-      key: "3",
-      name: "Pop super hit",
-      image: require("../assets/image/fMusic3.png"),
-    },
-    {
-      key: "4",
-      name: "New music Friday",
-      image: require("../assets/image/fMusic4.png"),
-    },
-    {
-      key: "5",
-      name: "New in dance",
-      image: require("../assets/image/fMusic5.png"),
-    },
-    {
-      key: "6",
-      name: "Latest Malayalam",
-      image: require("../assets/image/fMusic6.png"),
-    },
-    {
-      key: "7",
-      name: "Classical new music",
-      image: require("../assets/image/fMusic7.png"),
-    },
-    {
-      key: "8",
-      name: "Best Rapper",
-      image: require("../assets/image/fMusic8.png"),
-    },
-    {
-      key: "9",
-      name: "New in dance",
-      image: require("../assets/image/fMusic5.png"),
-    },
-    {
-      key: "10",
-      name: "Latest Malayalam",
-      image: require("../assets/image/fMusic6.png"),
-    },
-    {
-      key: "11",
-      name: "New music hindi",
-      image: require("../assets/image/fMusic1.png"),
-    },
-    {
-      key: "12",
-      name: "New music Panjabi",
-      image: require("../assets/image/fMusic2.png"),
-    },
-    {
-      key: "13",
-      name: "Pop super hit",
-      image: require("../assets/image/fMusic3.png"),
-    },
+   
     {
       key: "14",
       name: "New music Friday",

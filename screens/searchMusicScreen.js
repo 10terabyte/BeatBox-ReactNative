@@ -113,7 +113,7 @@ const SearchMusicScreen = (props) => {
 
   const [clearAll, setClearAll] = useState();
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
       <StatusBar
         backgroundColor={Colors.boldBlack}
         barStyle={Platform.OS === "android" ? "light-content" : "default"}

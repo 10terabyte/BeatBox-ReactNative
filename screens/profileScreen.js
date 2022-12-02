@@ -17,9 +17,11 @@ import BottomMusic from "../components/bottomMusic";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BottomSheet } from "react-native-btr";
 import { getAuth, signOut } from "firebase/auth";
+import { useAppContext } from "../context";
 const auth = getAuth();
 
 const ProfileScreen = (props) => {
+  const {user}= useAppContext();
   const { t, i18n } = useTranslation();
 
   const isRtl = i18n.dir() === "rtl";
@@ -32,7 +34,7 @@ const ProfileScreen = (props) => {
   const toggleClose = () => {
     setVisible(!visible);
   };
-  let userAvatar = auth.currentUser.photoURL == null || auth.currentUser.photoURL == '' ? `https://ui-avatars.com/api/?name=${auth.currentUser.displayName}` : auth.currentUser.photoURL;
+  let userAvatar = user.photoURL == null || user.photoURL == '' ? `https://ui-avatars.com/api/?name=${user.displayName}` : user.photoURL;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.boldBlack }}>
       <StatusBar
@@ -61,15 +63,15 @@ const ProfileScreen = (props) => {
           <Image style={{ width: 50, height: 50, borderRadius: 50 }} source={{
             uri:userAvatar}} />
           <View style={{ marginHorizontal: Default.fixPadding * 1.5 }}>
-            <Text style={{ ...Fonts.Bold16White }}>{auth.currentUser.displayName}</Text>
+            <Text style={{ ...Fonts.Bold16White }}>{user.displayName}</Text>
             <Text
               style={{
                 ...Fonts.Bold12ExtraWhite,
-                marginTop: auth.currentUser.phoneNumber ? Default.fixPadding * 0.5 : 0,
+                marginTop: user.phoneNumber ? Default.fixPadding * 0.5 : 0,
                 textAlign: isRtl ? "right" : "left",
               }}
             >
-              {auth.currentUser.phoneNumber ?? ''}
+              {user.phoneNumber ?? ''}
             </Text>
           </View>
         </View>

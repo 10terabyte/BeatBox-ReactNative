@@ -16,21 +16,26 @@ import { useTranslation } from "react-i18next";
 import { Colors, Fonts, Default } from "../constants/style";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomMusic from "../components/bottomMusic";
-import { useAuthentication } from '../utils/hooks/useAuthentication';
+// import { useAuthentication } from '../utils/hooks/useAuthentication';
 // import Firebase from "firebase";
+import { useAppContext } from "../context";
 import { getDatabase, ref, onValue, query, orderByChild, limitToFirst, equalTo } from "firebase/database";
 import {ref as s_ref, } from "firebase/storage";
 const { width } = Dimensions.get("window");
 const DB = getDatabase();
 const HomeScreen = (props) => {
-
   const { t, i18n } = useTranslation();
-  const { user } = useAuthentication();
+  const {user} = useAppContext();
+  console.log(user,"homeUser")
+  const [userData,setUserData] = useState({});
   const isRtl = i18n.dir() === "rtl";
 
   function tr(key) {
     return t(`homeScreen:${key}`);
   }
+  useEffect(()=>{
+    setUserData(user);
+  },[user])
   useEffect(() => {
     const collection = ref(DB, "artists/");
     const topArtistsRef = query(collection, orderByChild("follows"), limitToFirst(5))
@@ -57,7 +62,7 @@ const HomeScreen = (props) => {
 
   const renderItemArtists = ({ item, index }) => {
     const isFirst = index === 0;
-    console.log(item.ImageURL,"name")
+    // console.log(item.ImageURL,"name")
     return (
       <TouchableOpacity
         onPress={() => props.navigation.navigate("artistScreen",{item})}
@@ -360,7 +365,7 @@ const HomeScreen = (props) => {
   //     </TouchableOpacity>
   //   );
   // };
-
+  console.log(userData,"userdata")
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.darkBlue }}>
       <StatusBar
@@ -375,7 +380,7 @@ const HomeScreen = (props) => {
         }}
       >
         <View style={{ flex: 9 }}>
-          <Text style={{ ...Fonts.Bold18White }}>{tr("hello")} {user.displayName},</Text>
+          <Text style={{ ...Fonts.Bold18White }}>{tr("hello")} {userData.displayName},</Text>
           <Text style={{ ...Fonts.SemiBold14Grey }}>{tr("hearToday")}</Text>
         </View>
         <TouchableOpacity
