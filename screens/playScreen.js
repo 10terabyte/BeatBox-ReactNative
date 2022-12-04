@@ -19,9 +19,12 @@ import AddToPlayList from "../components/addToPlayList";
 import NewPlayList from "../components/newPlayList";
 import { Audio } from "expo-av";
 import { useAppContext } from "../context";
+import TrackPlayer from 'react-native-track-player';
+
 const PlayScreen = (props) => {
   const {setMusic, music} = useAppContext();
   const { t, i18n } = useTranslation();
+  const {isLoaded, setIsLoaded} = useState(false);
 
   const isRtl = i18n.dir() === "rtl";
 
@@ -42,6 +45,7 @@ const PlayScreen = (props) => {
   useEffect(()=>{
     if(props.route.params.item){
       setMusic(props.route.params.item);
+      LoadAudio();
     }else{
       setMusic({});
     }
@@ -78,17 +82,16 @@ const PlayScreen = (props) => {
   const sound = React.useRef(new Audio.Sound());
   const [Status, SetStatus] = React.useState(false);
 
-  React.useEffect(() => {
-    LoadAudio();
-    return () => sound.current.unloadAsync();
-  }, []);
+  // React.useEffect(() => {
+  //   LoadAudio();
+  //   return () => sound.current.unloadAsync();
+  // }, []);
 
   const LoadAudio = async () => {
     const result = await sound.current.loadAsync(
-      require("../assets/music/letMe.mp3"),
-
-      true
+     { uri:music.track_file,}
     );
+    console.log(result, "Load Audio Result")
     if (result.isLoaded === true) {
     } else {
       PlayAudio();
@@ -131,6 +134,7 @@ const PlayScreen = (props) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
+
         <ImageBackground
           source={props.route.params && props.route.params.item.track_thumbnail?{uri:props.route.params.item.track_thumbnail}:require("../assets/image/music.png")}
           style={{ flex: 1 }}
@@ -249,7 +253,7 @@ const PlayScreen = (props) => {
             </View>
 
             <View>
-              <View style={{ margin: Default.fixPadding * 2 }}>
+              {/* <View style={{ margin: Default.fixPadding * 2 }}>
                 <Text
                   style={{
                     ...Fonts.Bold14Grey,
@@ -295,7 +299,7 @@ const PlayScreen = (props) => {
                 >
                   When you love somebody
                 </Text>
-              </View>
+              </View> */}
               <View
                 style={{
                   flexDirection: isRtl ? "row-reverse" : "row",
@@ -308,7 +312,7 @@ const PlayScreen = (props) => {
                     alignItems: isRtl ? "flex-end" : "flex-start",
                   }}
                 >
-                  <Text style={{ ...Fonts.Bold24White }}>Let Somebody Go</Text>
+                  <Text style={{ ...Fonts.Bold24White }}>{music.track_name}</Text>
                   <View
                     style={{
                       flexDirection: isRtl ? "row-reverse" : "row",
@@ -322,7 +326,7 @@ const PlayScreen = (props) => {
                         ...Fonts.Bold14Grey,
                       }}
                     >
-                      Selena Gomez
+                      {music.track_genre}
                     </Text>
                     <View
                       style={{

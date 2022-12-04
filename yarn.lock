@@ -9545,11 +9545,6 @@ react-native-gradle-plugin@^0.70.3:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz#cbcf0619cbfbddaa9128701aa2d7b4145f9c4fc8"
   integrity sha512-oOanj84fJEXUg9FoEAQomA8ISG+DVIrTZ3qF7m69VQUJyOGYyDZmPqKcjvRku4KXlEH6hWO9i4ACLzNBh8gC0A==
 
-react-native-locale-detector@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/react-native-locale-detector/-/react-native-locale-detector-1.0.1.tgz"
-  integrity sha512-eL9NB1cNUzJ+XGbxkQXPcdn4DHPDEGodcxGvpTdSpUy9zbaSKOOG+HyJI5aCOEEODXf6+PwpdlZ6ZG7A3EGfuA==
-
 react-native-modal@^13.0.1:
   version "13.0.1"
   resolved "https://registry.npmjs.org/react-native-modal/-/react-native-modal-13.0.1.tgz"
@@ -9640,6 +9635,11 @@ react-native-tab-view@^3.3.0:
   integrity sha512-xjAQe657Gp/de2QHb7ptksTg8Jcb+j3fLAdcYryzfavt/pe+HtKLpkCtQsxyIJpRrAO7YPxFsymi2N4MnNfePA==
   dependencies:
     use-latest-callback "^0.1.5"
+
+react-native-track-player@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-3.2.0.tgz#c7b7a53eaf4c248af2ac876ef349feaee2ef774a"
+  integrity sha512-svv6TOgU/quFV1aajG5PskVhgFG0wHQtO+aYs6cIH0D27ckzN8WVoC3jI94m1CVaSgLMw48P911csYuD2fIcqA==
 
 react-native-vector-icons@^9.2.0:
   version "9.2.0"
